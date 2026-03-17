@@ -1,0 +1,28 @@
+# STM32CubeIDE
+.settings/
+Debug/
+Release/
+*.launch
+
+# Build artifacts
+*.o
+*.d
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+*.srec
+
+# CubeMX generated backup
+**/Src/main.c.bak
+**/Inc/main.h.bak
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+*.swp
+*.swo
