@@ -26,3 +26,9 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
+
+# Large binaries / demo media (kept locally only)
+*.zip
+*.mp4
+*.exe
+*.lib
