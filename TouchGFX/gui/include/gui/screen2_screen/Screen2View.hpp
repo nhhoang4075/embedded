@@ -1,0 +1,27 @@
+#ifndef SCREEN2VIEW_HPP
+#define SCREEN2VIEW_HPP
+
+#include <gui_generated/screen2_screen/Screen2ViewBase.hpp>
+#include <gui/screen2_screen/Screen2Presenter.hpp>
+#include <touchgfx/Unicode.hpp>
+
+class Screen2View : public Screen2ViewBase
+{
+public:
+    Screen2View();
+    virtual ~Screen2View() {}
+
+    virtual void setupScreen();
+    virtual void tearDownScreen();
+
+    void updateBoard(const uint32_t board[4][4]);
+    void updateScore(uint32_t score);
+
+protected:
+
+private:
+    static const uint16_t SCORE_BUFFER_SIZE = 12;
+    Unicode::UnicodeChar scoreBuffer[SCORE_BUFFER_SIZE];
+};
+
+#endif // SCREEN2VIEW_HPP

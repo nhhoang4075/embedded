@@ -1,34 +1,39 @@
-# STM32CubeIDE
-.settings/
-Debug/
-Release/
-*.launch
+# CubeMX
+.mxproject
+backup_*.ioc
 
-# Build artifacts
-*.o
-*.d
-*.elf
-*.bin
-*.hex
-*.map
-*.list
-*.srec
+# TouchGFX
+TouchGFX/*_backup.touchgfx
+TouchGFX/build/
+TouchGFX/config/
+TouchGFX/generated/
+TouchGFX/simulator/
+TouchGFX/target.config
+Middlewares/ST/touchgfx/
+Middlewares/ST/touchgfx_components/
+Middlewares/ST/touchgfx_backup*/
+gcc/components.mk
 
-# CubeMX generated backup
-**/Src/main.c.bak
-**/Inc/main.h.bak
+# IAR
+EWARM/settings/
+EWARM/STM32*/
+EWARM/*.dep
+EWARM/*.ewt
+EWARM/*.ipcf
+EWARM/*.custom_argvars
 
-# OS files
-.DS_Store
-Thumbs.db
+# CubeIDE
+STM32CubeIDE/.settings/
+STM32CubeIDE/Debug/
+STM32CubeIDE/Release/
 
-# IDE
-.vscode/
-*.swp
-*.swo
+# Keil
+MDK-ARM/RTE/
+MDK-ARM/STM32*/
+MDK-ARM/DebugConfig/
+MDK-ARM/*.lst
+MDK-ARM/*.out
+MDK-ARM/*vguix.*
 
-# Large binaries / demo media (kept locally only)
-*.zip
-*.mp4
-*.exe
-*.lib
+# CMake
+build/
