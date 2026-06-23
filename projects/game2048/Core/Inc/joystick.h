@@ -23,9 +23,11 @@
 #define JOY_ADC_CH_Y  ADC_CHANNEL_13   /* PC3 (trục Y) */
 #endif
 
-/* Ngưỡng trên thang 12-bit (0..4095), tâm ~2048. */
-#define JOY_THRESHOLD  1200u           /* lệch quá mức này mới tính là "đẩy" */
-#define JOY_DEADZONE   500u            /* trong khoảng tâm±500 coi như "thả" */
+/* Ngưỡng trên thang 12-bit (0..4095). Đã giảm để hoạt động cả với joystick 5V
+ * (push HIGH chỉ đạt ~991 vì ADC saturate ở 3.3V/4095).
+ * KHUYẾN NGHỊ: wire VCC joystick về 3.3V để tránh saturate + bảo vệ ADC. */
+#define JOY_THRESHOLD  600u            /* lệch quá mức này mới tính là "đẩy" */
+#define JOY_DEADZONE   200u            /* trong khoảng tâm±200 coi như "thả" */
 
 /* --- Hiệu chỉnh chiều theo cách lắp/đấu joystick (0 = giữ nguyên, 1 = bật) ---
  * Cách dò: cầm joystick cố định 1 chiều, build & test, đổi các số 0/1 dưới đây
