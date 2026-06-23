@@ -1,20 +1,25 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+*.swp
+*.swo
+
 # CubeMX
-.mxproject
+# .mxproject KHÔNG ignore: cần commit để các máy regen code đồng nhất
 backup_*.ioc
 
-# TouchGFX
+# TouchGFX — chỉ ignore backup & build output.
+# CẦN commit: Middlewares/ST/touchgfx/ (framework + .lib), TouchGFX/generated/,
+#             TouchGFX/config/, TouchGFX/target.config, gcc/components.mk
+# Lý do: máy Mac không cài được TouchGFX Designer; phải dựa vào file đã generate
+# trên máy có Windows (concaydanhram) để build được.
 TouchGFX/*_backup.touchgfx
 TouchGFX/build/
-TouchGFX/config/
-TouchGFX/generated/
 TouchGFX/simulator/
-TouchGFX/target.config
-Middlewares/ST/touchgfx/
-Middlewares/ST/touchgfx_components/
 Middlewares/ST/touchgfx_backup*/
-gcc/components.mk
 
-# IAR
+# IAR — commit project, ignore build state
 EWARM/settings/
 EWARM/STM32*/
 EWARM/*.dep
@@ -22,12 +27,7 @@ EWARM/*.ewt
 EWARM/*.ipcf
 EWARM/*.custom_argvars
 
-# CubeIDE
-STM32CubeIDE/.settings/
-STM32CubeIDE/Debug/
-STM32CubeIDE/Release/
-
-# Keil
+# Keil — commit project, ignore build state
 MDK-ARM/RTE/
 MDK-ARM/STM32*/
 MDK-ARM/DebugConfig/
@@ -35,5 +35,31 @@ MDK-ARM/*.lst
 MDK-ARM/*.out
 MDK-ARM/*vguix.*
 
-# CMake
+# CubeIDE — ignore output
+**/.settings/
+**/Debug/
+**/Release/
+*.launch
+
+# Build artifacts (objects / final binaries). KHÔNG ignore *.lib vì TouchGFX
+# core là pre-compiled library cần được commit.
+*.o
+*.d
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+*.srec
+
+# CMake / CLI build
 build/
+
+# CubeMX / source backups
+**/Src/*.bak
+**/Inc/*.bak
+
+# Demo media (kept local only — quá lớn cho git)
+*.zip
+*.mp4
+*.exe
