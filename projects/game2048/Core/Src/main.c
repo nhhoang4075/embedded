@@ -529,7 +529,10 @@ static void MX_LTDC_Init(void)
   /* LCD Init */
   LcdDrv->Init();
 
-  LcdDrv->DisplayOff();
+  /* CubeMX template để DisplayOff() sau Init, nhưng KHÔNG có chỗ nào
+   * gọi DisplayOn() lại -> màn hình trắng vĩnh viễn. Bật display luôn,
+   * LTDC + framebuffer sẽ sẵn sàng trước khi TouchGFX vẽ frame đầu. */
+  LcdDrv->DisplayOn();
   /* USER CODE END LTDC_Init 2 */
 
 }
