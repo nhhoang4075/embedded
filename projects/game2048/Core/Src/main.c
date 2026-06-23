@@ -1070,6 +1070,9 @@ void LCD_Delay(uint32_t Delay)
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
+  /* DIAG: nếu thấy VÀNG (RGB565 0xFFE0) -> FreeRTOS scheduler đang chạy,
+   * defaultTask đã được schedule. Nếu vẫn XANH DƯƠNG -> scheduler không start. */
+  for (volatile uint32_t *p = (uint32_t *)0xD0000000; p < (uint32_t *)0xD0040000; p++) *p = 0xFFE0FFE0;
   /* Infinite loop */
   for(;;)
   {
