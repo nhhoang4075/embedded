@@ -183,9 +183,10 @@ int main(void)
   MX_I2C3_Init();
   MX_SPI5_Init();
   MX_FMC_Init();
-  /* Clear framebuffer trong SDRAM về đen, tránh hiện noise trước khi
-   * TouchGFX vẽ frame đầu. 2 buffer * 240*320*2B = 307KB; clear 384KB cho an toàn. */
-  for (volatile uint32_t *p = (uint32_t *)0xD0000000; p < (uint32_t *)0xD0060000; p++) *p = 0;
+  /* Clear toàn bộ vùng SDRAM dùng cho frame/animation buffer về 0 (đen),
+   * tránh nhiễu trước khi TouchGFX vẽ frame đầu. animationStorage @ 0xD0000000
+   * (153KB) + frameBuf @ 0xD0025800 (307KB) = ~460KB; clear 1MB cho an toàn. */
+  for (volatile uint32_t *p = (uint32_t *)0xD0000000; p < (uint32_t *)0xD0100000; p++) *p = 0;
   MX_LTDC_Init();
   MX_DMA2D_Init();
   MX_ADC1_Init();
@@ -516,7 +517,7 @@ static void MX_LTDC_Init(void)
   pLayerCfg.Alpha0 = 0;
   pLayerCfg.BlendingFactor1 = LTDC_BLENDING_FACTOR1_CA;
   pLayerCfg.BlendingFactor2 = LTDC_BLENDING_FACTOR2_CA;
-  pLayerCfg.FBStartAdress = 0;
+  pLayerCfg.FBStartAdress = 0xD0000000;   /* SDRAM start, đã clear về 0 ở MX_FMC_Init - lúc TouchGFX chưa override */
   pLayerCfg.ImageWidth = 240;
   pLayerCfg.ImageHeight = 320;
   pLayerCfg.Backcolor.Blue = 0;
