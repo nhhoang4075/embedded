@@ -22,6 +22,7 @@ protected:
 private:
     static const uint16_t SCORE_BUFFER_SIZE = 12;
     Unicode::UnicodeChar scoreBuffer[SCORE_BUFFER_SIZE];
+    Unicode::UnicodeChar highScoreBuffer[SCORE_BUFFER_SIZE];
 };
 
 #endif // SCREEN2VIEW_HPP
