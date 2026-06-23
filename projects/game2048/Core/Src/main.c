@@ -190,11 +190,22 @@ int main(void)
   MX_LTDC_Init();
   MX_DMA2D_Init();
   MX_ADC1_Init();
+  /* DIAG: fill SDRAM với RED (RGB565 0xF800) trước MX_TouchGFX_Init.
+   * Nếu thấy ĐỎ -> CPU vượt qua tất cả MX_xxx_Init OK. */
+  for (volatile uint32_t *p = (uint32_t *)0xD0000000; p < (uint32_t *)0xD0040000; p++) *p = 0xF800F800;
   MX_TouchGFX_Init();
   /* Call PreOsInit function */
   MX_TouchGFX_PreOSInit();
+  /* DIAG: fill XANH LÁ sau MX_TouchGFX_Init.
+   * Nếu thấy XANH -> TouchGFX_Init không hang.
+   * Nếu vẫn ĐỎ -> hang trong MX_TouchGFX_Init. */
+  for (volatile uint32_t *p = (uint32_t *)0xD0000000; p < (uint32_t *)0xD0040000; p++) *p = 0x07E007E0;
   /* USER CODE BEGIN 2 */
   joystick_init(&hadc1);
+  /* DIAG: fill XANH DƯƠNG sau joystick_init.
+   * Nếu thấy XANH DƯƠNG -> mọi thứ đã init xong, sắp vào scheduler.
+   * Nếu vẫn XANH LÁ -> hang trong joystick_init (HAL_ADC_Start_DMA). */
+  for (volatile uint32_t *p = (uint32_t *)0xD0000000; p < (uint32_t *)0xD0040000; p++) *p = 0x001F001F;
   /* USER CODE END 2 */
 
   /* Init scheduler */
