@@ -49,33 +49,16 @@ extern "C" uint8_t isRevD; /* Applicable only for STM32F429I DISCOVERY REVD and 
 
 void STM32TouchController::init()
 {
-    /**
-     * Initialize touch controller and driver
-     *
-     */
-    BSP_TS_Init(240, 320);
+    /* Bypass STMPE811 init - chip không phản hồi I2C trên board này,
+     * BSP_TS_Init dùng HAL_I2C với timeout 12s x nhiều calls -> hang vài phút.
+     * Game dùng joystick, không cần touch -> skip. */
+    // BSP_TS_Init(240, 320);
 }
 
 bool STM32TouchController::sampleTouch(int32_t& x, int32_t& y)
 {
-    /**
-     * By default sampleTouch returns false,
-     * return true if a touch has been detected, otherwise false.
-     *
-     * Coordinates are passed to the caller by reference by x and y.
-     *
-     * This function is called by the TouchGFX framework.
-     * By default sampleTouch is called every tick, this can be adjusted by HAL::setTouchSampleRate(int8_t);
-     *
-     */
-    TS_StateTypeDef state;
-    BSP_TS_GetState(&state);
-    if (state.TouchDetected)
-    {
-        x = state.X;
-        y = state.Y;
-        return true;
-    }
+    /* Touch bị disable (xem init()), luôn trả về "không có touch". */
+    (void)x; (void)y;
     return false;
 }
 
