@@ -190,22 +190,11 @@ int main(void)
   MX_LTDC_Init();
   MX_DMA2D_Init();
   MX_ADC1_Init();
-  /* DIAG: fill SDRAM với RED (RGB565 0xF800) trước MX_TouchGFX_Init.
-   * Nếu thấy ĐỎ -> CPU vượt qua tất cả MX_xxx_Init OK. */
-  for (volatile uint32_t *p = (uint32_t *)0xD0000000; p < (uint32_t *)0xD0040000; p++) *p = 0xF800F800;
   MX_TouchGFX_Init();
   /* Call PreOsInit function */
   MX_TouchGFX_PreOSInit();
-  /* DIAG: fill XANH LÁ sau MX_TouchGFX_Init.
-   * Nếu thấy XANH -> TouchGFX_Init không hang.
-   * Nếu vẫn ĐỎ -> hang trong MX_TouchGFX_Init. */
-  for (volatile uint32_t *p = (uint32_t *)0xD0000000; p < (uint32_t *)0xD0040000; p++) *p = 0x07E007E0;
   /* USER CODE BEGIN 2 */
   joystick_init(&hadc1);
-  /* DIAG: fill XANH DƯƠNG sau joystick_init.
-   * Nếu thấy XANH DƯƠNG -> mọi thứ đã init xong, sắp vào scheduler.
-   * Nếu vẫn XANH LÁ -> hang trong joystick_init (HAL_ADC_Start_DMA). */
-  for (volatile uint32_t *p = (uint32_t *)0xD0000000; p < (uint32_t *)0xD0040000; p++) *p = 0x001F001F;
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -235,7 +224,6 @@ int main(void)
   GUI_TaskHandle = osThreadNew(TouchGFX_Task, NULL, &GUI_Task_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -1070,9 +1058,6 @@ void LCD_Delay(uint32_t Delay)
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
-  /* DIAG: nếu thấy VÀNG (RGB565 0xFFE0) -> FreeRTOS scheduler đang chạy,
-   * defaultTask đã được schedule. Nếu vẫn XANH DƯƠNG -> scheduler không start. */
-  for (volatile uint32_t *p = (uint32_t *)0xD0000000; p < (uint32_t *)0xD0040000; p++) *p = 0xFFE0FFE0;
   /* Infinite loop */
   for(;;)
   {

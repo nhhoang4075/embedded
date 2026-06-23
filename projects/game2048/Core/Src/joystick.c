@@ -16,6 +16,12 @@ void joystick_init(ADC_HandleTypeDef *hadc)
     s_hadc = hadc;
     s_centered = true;
     HAL_ADC_Start_DMA(s_hadc, (uint32_t *)s_buf, 2);
+    /* ADC continuous + DMA circular sẽ sinh DMA transfer-complete IRQ
+     * mỗi 2 conversion (~750K IRQ/giây ở config hiện tại) -> CPU 100% trong
+     * IRQ -> FreeRTOS scheduler không bao giờ start được.
+     * Mình đọc s_buf trực tiếp nên không cần IRQ - disable hết. */
+    __HAL_DMA_DISABLE_IT(s_hadc->DMA_Handle, DMA_IT_TC | DMA_IT_HT | DMA_IT_TE);
+    HAL_NVIC_DisableIRQ(DMA2_Stream0_IRQn);
 }
 
 joy_dir_t joystick_poll(void)
