@@ -4,11 +4,16 @@
  * DMA tự chuyển 2 mẫu (rank1 = CH_X, rank2 = CH_Y) vào s_buf liên tục,
  * không tốn CPU. joystick_poll() chỉ việc đọc buffer và áp dụng
  * deadzone + edge-trigger để phát ra 1 hướng cho mỗi lần đẩy.
+ *
+ * Tâm joystick được auto-calibrate tại init (lúc đó user chưa cầm cần),
+ * không giả định = 2048: joystick analog rẻ tiền thường drift ±500.
  */
 #include "joystick.h"
 
 static ADC_HandleTypeDef *s_hadc;
 static volatile uint16_t  s_buf[2];   /* [0] = trục X (rank 1), [1] = trục Y (rank 2) */
+static int32_t s_center_x = 2048;     /* tâm đo tại boot (joystick at rest) */
+static int32_t s_center_y = 2048;
 static bool s_centered = true;        /* đã về vùng giữa kể từ lần đẩy trước chưa */
 
 void joystick_init(ADC_HandleTypeDef *hadc)
@@ -22,6 +27,18 @@ void joystick_init(ADC_HandleTypeDef *hadc)
      * Mình đọc s_buf trực tiếp nên không cần IRQ - disable hết. */
     __HAL_DMA_DISABLE_IT(s_hadc->DMA_Handle, DMA_IT_TC | DMA_IT_HT | DMA_IT_TE);
     HAL_NVIC_DisableIRQ(DMA2_Stream0_IRQn);
+
+    /* Calibrate tâm: chờ DMA fill buffer xong, lấy trung bình 8 mẫu cách nhau 2ms.
+     * Assume user chưa cầm joystick lúc boot. */
+    HAL_Delay(20);
+    uint32_t sx = 0, sy = 0;
+    for (int i = 0; i < 8; i++) {
+        sx += s_buf[0];
+        sy += s_buf[1];
+        HAL_Delay(2);
+    }
+    s_center_x = (int32_t)(sx / 8);
+    s_center_y = (int32_t)(sy / 8);
 }
 
 joy_dir_t joystick_poll(void)
@@ -29,8 +46,8 @@ joy_dir_t joystick_poll(void)
     if (!s_hadc)
         return JOY_NONE;
 
-    int32_t x = (int32_t)s_buf[0] - 2048;  /* lệch so với tâm 12-bit */
-    int32_t y = (int32_t)s_buf[1] - 2048;
+    int32_t x = (int32_t)s_buf[0] - s_center_x;  /* lệch so với tâm đã calibrate */
+    int32_t y = (int32_t)s_buf[1] - s_center_y;
 
     /* Hiệu chỉnh chiều theo cách lắp joystick (cấu hình trong joystick.h). */
 #if JOY_SWAP_XY
