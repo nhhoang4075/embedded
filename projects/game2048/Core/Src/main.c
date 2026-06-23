@@ -183,6 +183,9 @@ int main(void)
   MX_I2C3_Init();
   MX_SPI5_Init();
   MX_FMC_Init();
+  /* Clear framebuffer trong SDRAM về đen, tránh hiện noise trước khi
+   * TouchGFX vẽ frame đầu. 2 buffer * 240*320*2B = 307KB; clear 384KB cho an toàn. */
+  for (volatile uint32_t *p = (uint32_t *)0xD0000000; p < (uint32_t *)0xD0060000; p++) *p = 0;
   MX_LTDC_Init();
   MX_DMA2D_Init();
   MX_ADC1_Init();
