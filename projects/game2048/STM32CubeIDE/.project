@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>STM32F429I_DISCO_REV_D01</name>
+	<name>game2048</name>
 	<comment/>
 	<projects>
 	</projects>
@@ -35,9 +35,9 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>STM32F429I_DISCO_REV_D01.ioc</name>
+			<name>game2048.ioc</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/STM32F429I_DISCO_REV_D01.ioc</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/game2048.ioc</locationURI>
 		</link>
 		<link>
 			<name>Application/User/freertos.c</name>

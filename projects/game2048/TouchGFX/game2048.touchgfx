@@ -324,7 +324,7 @@
     "SubFamily": "STM32F429/439",
     "Toolchain": "STM32CubeIDE",
     "Platform": "m4",
-    "ProjectFile": "../STM32F429I_DISCO_REV_D01.ioc",
+    "ProjectFile": "../game2048.ioc",
     "OptionalComponentsRoot": "../Middlewares/ST/touchgfx_components",
     "OptionalComponents": [],
     "AdditionalFeatures": [
