@@ -11,6 +11,13 @@ Screen2View::Screen2View()
 void Screen2View::setupScreen()
 {
     Screen2ViewBase::setupScreen();
+
+    /* Wildcard không được Designer wire tự động -> nối tay 2 ô text với
+     * buffer riêng, khởi tạo về "0" để khỏi hiện trống lúc đầu. */
+    textArea2.setWildcard(scoreBuffer);
+    textArea1.setWildcard(highScoreBuffer);
+    Unicode::snprintf(scoreBuffer,     SCORE_BUFFER_SIZE, "0");
+    Unicode::snprintf(highScoreBuffer, SCORE_BUFFER_SIZE, "0");
 }
 
 void Screen2View::tearDownScreen()
