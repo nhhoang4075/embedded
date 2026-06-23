@@ -10,10 +10,7 @@ Screen1Presenter::Screen1Presenter(Screen1View& v)
 
 void Screen1Presenter::activate()
 {
-    /* Touch bị disable (STMPE811 không phản hồi) -> không bấm được nút Start.
-     * Auto chuyển sang Screen2 (màn game). */
-    static_cast<FrontendApplication*>(Application::getInstance())
-        ->gotoScreen2ScreenSlideTransitionEast();
+
 }
 
 void Screen1Presenter::deactivate()

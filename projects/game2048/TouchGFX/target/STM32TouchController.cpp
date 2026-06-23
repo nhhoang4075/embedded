@@ -49,16 +49,19 @@ extern "C" uint8_t isRevD; /* Applicable only for STM32F429I DISCOVERY REVD and 
 
 void STM32TouchController::init()
 {
-    /* Bypass STMPE811 init - chip không phản hồi I2C trên board này,
-     * BSP_TS_Init dùng HAL_I2C với timeout 12s x nhiều calls -> hang vài phút.
-     * Game dùng joystick, không cần touch -> skip. */
-    // BSP_TS_Init(240, 320);
+    BSP_TS_Init(240, 320);
 }
 
 bool STM32TouchController::sampleTouch(int32_t& x, int32_t& y)
 {
-    /* Touch bị disable (xem init()), luôn trả về "không có touch". */
-    (void)x; (void)y;
+    TS_StateTypeDef state;
+    BSP_TS_GetState(&state);
+    if (state.TouchDetected)
+    {
+        x = state.X;
+        y = state.Y;
+        return true;
+    }
     return false;
 }
 
