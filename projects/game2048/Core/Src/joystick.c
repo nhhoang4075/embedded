@@ -1,38 +1,30 @@
 /*
- * joystick.c - Đọc ADC 2 trục và quy ra hướng gạt (edge-trigger + deadzone).
+ * joystick.c - Đọc joystick 2 trục qua ADC1 + DMA circular.
+ *
+ * DMA tự chuyển 2 mẫu (rank1 = CH_X, rank2 = CH_Y) vào s_buf liên tục,
+ * không tốn CPU. joystick_poll() chỉ việc đọc buffer và áp dụng
+ * deadzone + edge-trigger để phát ra 1 hướng cho mỗi lần đẩy.
  */
 #include "joystick.h"
 
 static ADC_HandleTypeDef *s_hadc;
-static bool s_centered = true;   /* cần đã về vùng giữa kể từ lần đẩy trước chưa */
+static volatile uint16_t  s_buf[2];   /* [0] = trục X (rank 1), [1] = trục Y (rank 2) */
+static bool s_centered = true;        /* đã về vùng giữa kể từ lần đẩy trước chưa */
 
 void joystick_init(ADC_HandleTypeDef *hadc)
 {
     s_hadc = hadc;
     s_centered = true;
-}
-
-/* Đọc 1 mẫu ADC ở kênh chỉ định (chế độ polling, dùng chung 1 ADC). */
-static uint32_t read_channel(uint32_t channel)
-{
-    ADC_ChannelConfTypeDef cfg = {0};
-    cfg.Channel = channel;
-    cfg.Rank = 1;
-    cfg.SamplingTime = ADC_SAMPLETIME_84CYCLES;
-    HAL_ADC_ConfigChannel(s_hadc, &cfg);
-
-    HAL_ADC_Start(s_hadc);
-    uint32_t val = 0;
-    if (HAL_ADC_PollForConversion(s_hadc, 10) == HAL_OK)
-        val = HAL_ADC_GetValue(s_hadc);
-    HAL_ADC_Stop(s_hadc);
-    return val;
+    HAL_ADC_Start_DMA(s_hadc, (uint32_t *)s_buf, 2);
 }
 
 joy_dir_t joystick_poll(void)
 {
-    int32_t x = (int32_t)read_channel(JOY_ADC_CH_X) - 2048;  /* lệch so với tâm */
-    int32_t y = (int32_t)read_channel(JOY_ADC_CH_Y) - 2048;
+    if (!s_hadc)
+        return JOY_NONE;
+
+    int32_t x = (int32_t)s_buf[0] - 2048;  /* lệch so với tâm 12-bit */
+    int32_t y = (int32_t)s_buf[1] - 2048;
 
     /* Hiệu chỉnh chiều theo cách lắp joystick (cấu hình trong joystick.h). */
 #if JOY_SWAP_XY
