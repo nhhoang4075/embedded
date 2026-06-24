@@ -27,10 +27,24 @@ public:
         return game.score;
     }
 
+    uint32_t getHighScore() const
+    {
+        return highScore;
+    }
+
+    /* Bật/tắt nhận joystick analog cho game (Screen2 = true, Screen1 = false).
+     * SW vẫn được poll ở mọi trạng thái để điều hướng. */
+    void setGameActive(bool active)
+    {
+        gameActive = active;
+    }
+
 private:
     ModelListener* modelListener;
 
     g2048_game_t game;
+    uint32_t     highScore;  /* RAM only, mất khi reset/tắt nguồn */
+    bool         gameActive;
 };
 
 #endif

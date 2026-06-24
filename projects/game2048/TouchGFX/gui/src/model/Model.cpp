@@ -15,7 +15,9 @@ static uint32_t simulator_rng(void*)
 }
 
 Model::Model() :
-    modelListener(0)
+    modelListener(0),
+    highScore(0),
+    gameActive(false)
 {
     srand(HAL_GetTick());
     g2048_init(&game, simulator_rng, nullptr);
@@ -23,17 +25,29 @@ Model::Model() :
 
 void Model::tick()
 {
-	joy_dir_t dir = joystick_poll();
+    /* SW joystick luôn được poll, kể cả trên Screen1, để điều hướng. */
+    if (joystick_sw_pressed() && modelListener)
+    {
+        modelListener->swPressed();
+    }
 
-	    if(dir != JOY_NONE)
-	    {
-	        if(g2048_move(&game, (g2048_dir_t)dir))
-	        {
-	            if(modelListener)
-	            {
-	                modelListener->boardChanged();
-	                modelListener->scoreChanged(game.score);
-	            }
-	        }
-	    }
+    /* Joystick analog chỉ áp dụng khi đang ở Screen2 (chơi game). */
+    if (!gameActive)
+        return;
+
+    joy_dir_t dir = joystick_poll();
+    if (dir == JOY_NONE)
+        return;
+
+    if (g2048_move(&game, (g2048_dir_t)dir))
+    {
+        if (game.score > highScore)
+            highScore = game.score;
+
+        if (modelListener)
+        {
+            modelListener->boardChanged();
+            modelListener->scoreChanged(game.score);
+        }
+    }
 }

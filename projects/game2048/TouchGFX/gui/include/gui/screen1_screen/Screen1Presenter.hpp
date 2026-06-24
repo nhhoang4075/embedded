@@ -25,6 +25,9 @@ public:
      */
     virtual void deactivate();
 
+    /* SW joystick: Screen1 -> goto Screen2 (start chơi game). */
+    virtual void swPressed();
+
     virtual ~Screen1Presenter() {}
 
 private:

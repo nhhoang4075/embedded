@@ -21,6 +21,8 @@ public:
 
     void boardChanged();
     void scoreChanged(uint32_t score);
+    /* SW joystick: Screen2 -> goto Screen1 (giữ điểm trong RAM). */
+    virtual void swPressed();
 
 private:
     Screen2Presenter();

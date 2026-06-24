@@ -18,6 +18,10 @@ public:
 
     virtual void boardChanged() {}
     virtual void scoreChanged(uint32_t score) {}
+    /* SW joystick (ấn xuống stick). Mỗi Presenter override để điều hướng:
+     *   Screen1 -> goto Screen2 (start game)
+     *   Screen2 -> goto Screen1 (thoát, giữ điểm trong RAM) */
+    virtual void swPressed() {}
 protected:
     Model* model;
 };

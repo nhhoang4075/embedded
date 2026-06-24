@@ -12,12 +12,20 @@ void Screen2View::setupScreen()
 {
     Screen2ViewBase::setupScreen();
 
-    /* Wildcard không được Designer wire tự động -> nối tay 2 ô text với
-     * buffer riêng, khởi tạo về "0" để khỏi hiện trống lúc đầu. */
+    /* Wildcard không được Designer auto-wire -> nối tay 2 ô text với buffer
+     * riêng, khởi tạo "0" để khỏi hiện trống.
+     * Lưu ý: font hiện chưa có glyph 0-9. Sau khi concaydanhram regen font
+     * (texts.xml đã thêm WildcardCharacters="0123456789 /") số sẽ hiện. */
     textArea2.setWildcard(scoreBuffer);
     textArea1.setWildcard(highScoreBuffer);
     Unicode::snprintf(scoreBuffer,     SCORE_BUFFER_SIZE, "0");
     Unicode::snprintf(highScoreBuffer, SCORE_BUFFER_SIZE, "0");
+
+    /* 7-seg tạm hiển thị điểm. Đặt góc trên-phải, đen trên nền beige. */
+    scoreSeg.layout(170, 8, touchgfx::Color::getColorFromRGB(0, 0, 0));
+    for (int i = 0; i < SevenSegDigits4::SEG_COUNT; ++i)
+        add(scoreSeg.segment(i));
+    scoreSeg.setNumber(0);
 }
 
 void Screen2View::tearDownScreen()
@@ -94,4 +102,5 @@ void Screen2View::updateScore(uint32_t score)
                       score);
 
     textArea2.invalidate();
+    scoreSeg.setNumber((uint16_t)(score > 9999 ? 9999 : score));
 }
