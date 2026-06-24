@@ -93,7 +93,8 @@ const osThreadAttr_t GUI_Task_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* USER CODE BEGIN PV */
-uint8_t isRevD = 0; /* Applicable only for STM32F429I DISCOVERY REVD and above */
+uint8_t isRevD = 0;
+uint16_t adc_buffer[2] = {0};/* Applicable only for STM32F429I DISCOVERY REVD and above */
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -190,6 +191,7 @@ int main(void)
   MX_LTDC_Init();
   MX_DMA2D_Init();
   MX_ADC1_Init();
+
   MX_TouchGFX_Init();
   /* Call PreOsInit function */
   MX_TouchGFX_PreOSInit();
@@ -1058,6 +1060,9 @@ void LCD_Delay(uint32_t Delay)
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
+	HAL_ADC_Start_DMA(&hadc1,
+	                  (uint32_t*)adc_buffer,
+	                  2);
   /* Infinite loop */
   for(;;)
   {
