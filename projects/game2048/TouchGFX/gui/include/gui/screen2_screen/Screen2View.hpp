@@ -3,6 +3,7 @@
 
 #include <gui_generated/screen2_screen/Screen2ViewBase.hpp>
 #include <gui/screen2_screen/Screen2Presenter.hpp>
+#include <gui/common/SevenSegDigits4.hpp>
 #include <touchgfx/Unicode.hpp>
 
 class Screen2View : public Screen2ViewBase
@@ -23,6 +24,10 @@ private:
     static const uint16_t SCORE_BUFFER_SIZE = 12;
     Unicode::UnicodeChar scoreBuffer[SCORE_BUFFER_SIZE];
     Unicode::UnicodeChar highScoreBuffer[SCORE_BUFFER_SIZE];
+
+    /* 7-seg tạm hiển thị điểm hiện tại (góc trên-phải Screen2, y=8..26).
+     * Bỏ khi font có glyph 0-9. */
+    SevenSegDigits4 scoreSeg;
 };
 
 #endif // SCREEN2VIEW_HPP
