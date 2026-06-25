@@ -6,7 +6,8 @@
 #include <images/BitmapDatabase.hpp>
 #include <texts/TextKeysAndLanguages.hpp>
 
-Screen2ViewBase::Screen2ViewBase()
+Screen2ViewBase::Screen2ViewBase() :
+    buttonCallback(this, &Screen2ViewBase::buttonCallbackHandler)
 {
     __background.setPosition(0, 0, 240, 320);
     __background.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
@@ -112,6 +113,28 @@ Screen2ViewBase::Screen2ViewBase()
     textArea2.setLinespacing(0);
     textArea2.setTypedText(touchgfx::TypedText(T___SINGLEUSE_GGFH));
     add(textArea2);
+
+    containerGameOver.setPosition(18, 68, 200, 200);
+    containerGameOver.setVisible(false);
+    boxGameOver.setPosition(0, 0, 200, 200);
+    boxGameOver.setColor(touchgfx::Color::getColorFromRGB(209, 155, 94));
+    containerGameOver.add(boxGameOver);
+
+    textArea3.setXY(39, 49);
+    textArea3.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
+    textArea3.setLinespacing(0);
+    textArea3.setTypedText(touchgfx::TypedText(T___SINGLEUSE_QGRR));
+    containerGameOver.add(textArea3);
+
+    returnButton.setXY(33, 111);
+    returnButton.setBitmaps(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_BUTTON_REGULAR_HEIGHT_36_SMALL_ROUND_ACTION_ID), touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_BUTTON_REGULAR_HEIGHT_36_SMALL_ROUND_PRESSED_ID));
+    returnButton.setLabelText(touchgfx::TypedText(T___SINGLEUSE_VWGN));
+    returnButton.setLabelColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
+    returnButton.setLabelColorPressed(touchgfx::Color::getColorFromRGB(255, 255, 255));
+    returnButton.setAction(buttonCallback);
+    containerGameOver.add(returnButton);
+
+    add(containerGameOver);
 }
 
 Screen2ViewBase::~Screen2ViewBase()
@@ -122,4 +145,15 @@ Screen2ViewBase::~Screen2ViewBase()
 void Screen2ViewBase::setupScreen()
 {
 
+}
+
+void Screen2ViewBase::buttonCallbackHandler(const touchgfx::AbstractButton& src)
+{
+    if (&src == &returnButton)
+    {
+        //Interaction1
+        //When returnButton clicked change screen to Screen1
+        //Go to Screen1 with screen transition towards East
+        application().gotoScreen1ScreenSlideTransitionEast();
+    }
 }

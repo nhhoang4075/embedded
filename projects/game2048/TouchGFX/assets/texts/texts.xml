@@ -6,6 +6,12 @@
   <Texts>
     <TextGroup Id="Group1" />
     <TextGroup Id="Unsorted">
+      <Text Id="__SingleUse_QGRR" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">Game Over!</Translation>
+      </Text>
+      <Text Id="__SingleUse_VWGN" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Return</Translation>
+      </Text>
       <Text Id="__SingleUse_GGFH" Alignment="Left" TypographyId="Default">
         <Translation Language="GB">Score: &lt;value&gt;</Translation>
       </Text>
@@ -22,7 +28,7 @@
   </Texts>
   <Typographies>
     <Typography Id="Default" Font="verdana.ttf" Size="20" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" WildcardCharacters="0123456789 /" />
-    <Typography Id="Large"   Font="verdana.ttf" Size="40" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" WildcardCharacters="0123456789 /" />
-    <Typography Id="Small"   Font="verdana.ttf" Size="10" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" WildcardCharacters="0123456789 /" />
+    <Typography Id="Large" Font="verdana.ttf" Size="40" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" WildcardCharacters="0123456789 /" />
+    <Typography Id="Small" Font="verdana.ttf" Size="10" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" WildcardCharacters="0123456789 /" />
   </Typographies>
 </TextDatabase>

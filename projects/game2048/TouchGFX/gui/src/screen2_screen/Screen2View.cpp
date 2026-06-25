@@ -12,20 +12,16 @@ void Screen2View::setupScreen()
 {
     Screen2ViewBase::setupScreen();
 
-    /* Wildcard không được Designer auto-wire -> nối tay 2 ô text với buffer
-     * riêng, khởi tạo "0" để khỏi hiện trống.
-     * Lưu ý: font hiện chưa có glyph 0-9. Sau khi concaydanhram regen font
-     * (texts.xml đã thêm WildcardCharacters="0123456789 /") số sẽ hiện. */
     textArea2.setWildcard(scoreBuffer);
     textArea1.setWildcard(highScoreBuffer);
     Unicode::snprintf(scoreBuffer,     SCORE_BUFFER_SIZE, "0");
     Unicode::snprintf(highScoreBuffer, SCORE_BUFFER_SIZE, "0");
 
-    /* 7-seg tạm hiển thị điểm. Đặt góc trên-phải, đen trên nền beige. */
-    scoreSeg.layout(170, 8, touchgfx::Color::getColorFromRGB(0, 0, 0));
-    for (int i = 0; i < SevenSegDigits4::SEG_COUNT; ++i)
-        add(scoreSeg.segment(i));
-    scoreSeg.setNumber(0);
+    textArea2.resizeToCurrentText();
+    textArea2.invalidate();
+
+    textArea1.resizeToCurrentText();
+    textArea1.invalidate();
 }
 
 void Screen2View::tearDownScreen()
@@ -98,9 +94,26 @@ void Screen2View::updateScore(uint32_t score)
 {
     Unicode::snprintf(scoreBuffer,
                       SCORE_BUFFER_SIZE,
-                      "%lu",
+                      "%u",
                       score);
 
+    textArea2.resizeToCurrentText();
     textArea2.invalidate();
-    scoreSeg.setNumber((uint16_t)(score > 9999 ? 9999 : score));
+}
+
+void Screen2View::updateHighScore(uint32_t score)
+{
+    Unicode::snprintf(highScoreBuffer,
+                      SCORE_BUFFER_SIZE,
+                      "%u",
+                      score);
+
+    textArea1.resizeToCurrentText();
+    textArea1.invalidate();
+}
+
+void Screen2View::showGameOver()
+{
+    containerGameOver.setVisible(true);
+    containerGameOver.invalidate();
 }

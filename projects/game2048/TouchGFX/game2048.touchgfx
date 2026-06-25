@@ -269,9 +269,79 @@
             "TextRotation": "0",
             "AutoSize": true,
             "Wildcard1": {}
+          },
+          {
+            "Type": "Container",
+            "Name": "containerGameOver",
+            "X": 18,
+            "Y": 68,
+            "Width": 200,
+            "Height": 200,
+            "Visible": false,
+            "Components": [
+              {
+                "Type": "Box",
+                "Name": "boxGameOver",
+                "Width": 200,
+                "Height": 200,
+                "Color": {
+                  "Red": 209,
+                  "Green": 155,
+                  "Blue": 94
+                }
+              },
+              {
+                "Type": "TextArea",
+                "Name": "textArea3",
+                "X": 39,
+                "Y": 49,
+                "Width": 123,
+                "Height": 24,
+                "TextId": "__SingleUse_QGRR",
+                "TextRotation": "0",
+                "AutoSize": true
+              },
+              {
+                "Type": "ButtonWithLabel",
+                "Name": "returnButton",
+                "X": 33,
+                "Y": 111,
+                "Width": 138,
+                "Height": 36,
+                "Pressed": "__generated\\alternate_theme_images_widgets_button_regular_height_36_small_round_pressed.png",
+                "Released": "__generated\\alternate_theme_images_widgets_button_regular_height_36_small_round_action.png",
+                "TextId": "__SingleUse_VWGN",
+                "ReleasedColor": {
+                  "Red": 255,
+                  "Green": 255,
+                  "Blue": 255
+                },
+                "PressedColor": {
+                  "Red": 255,
+                  "Green": 255,
+                  "Blue": 255
+                },
+                "TextRotation": "0",
+                "Preset": "alternate_theme\\presets\\button\\regular\\height_36\\small_round_action.json"
+              }
+            ]
           }
         ],
-        "Interactions": []
+        "Interactions": [
+          {
+            "InteractionName": "Interaction1",
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "returnButton"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionSlide",
+              "ScreenTransitionDirection": "East",
+              "ActionComponent": "Screen1"
+            }
+          }
+        ]
       }
     ],
     "CustomContainerDefinitions": [],
