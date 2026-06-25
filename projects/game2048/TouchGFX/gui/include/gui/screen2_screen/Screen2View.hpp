@@ -17,6 +17,9 @@ public:
 
     void updateBoard(const uint32_t board[4][4]);
     void updateScore(uint32_t score);
+    void updateHighScore(uint32_t score);
+
+    void showGameOver();
 
 protected:
 

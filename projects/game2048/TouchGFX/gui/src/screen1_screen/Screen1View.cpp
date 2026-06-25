@@ -13,11 +13,8 @@ void Screen1View::setupScreen()
     textHighScore.setWildcard(highScoreBuffer);
     Unicode::snprintf(highScoreBuffer, HIGH_SCORE_BUFFER_SIZE, "0");
 
-    /* 7-seg tạm hiển thị high score, sát phải textHighScore (y≈225). */
-    highScoreSeg.layout(140, 227, touchgfx::Color::getColorFromRGB(0, 0, 0));
-    for (int i = 0; i < SevenSegDigits4::SEG_COUNT; ++i)
-        add(highScoreSeg.segment(i));
-    highScoreSeg.setNumber(0);
+    textHighScore.resizeToCurrentText();
+    textHighScore.invalidate();
 }
 
 void Screen1View::tearDownScreen()
@@ -27,7 +24,7 @@ void Screen1View::tearDownScreen()
 
 void Screen1View::updateHighScore(uint32_t score)
 {
-    Unicode::snprintf(highScoreBuffer, HIGH_SCORE_BUFFER_SIZE, "%lu", score);
+    Unicode::snprintf(highScoreBuffer, HIGH_SCORE_BUFFER_SIZE, "%d", score);
+    textHighScore.resizeToCurrentText();
     textHighScore.invalidate();
-    highScoreSeg.setNumber((uint16_t)(score > 9999 ? 9999 : score));
 }

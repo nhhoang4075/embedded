@@ -22,6 +22,7 @@ void Screen2Presenter::activate()
 
     view.updateBoard(g->grid);
     view.updateScore(model->getScore());
+    view.updateHighScore(model->getHighScore());
 }
 
 void Screen2Presenter::deactivate()
@@ -32,11 +33,17 @@ void Screen2Presenter::deactivate()
 void Screen2Presenter::boardChanged()
 {
     view.updateBoard(model->getGame()->grid);
+
+    if (model->getGame()->state == G2048_LOST)
+        {
+            view.showGameOver();
+        }
 }
 
 void Screen2Presenter::scoreChanged(uint32_t score)
 {
     view.updateScore(score);
+    view.updateHighScore(model->getHighScore());
 }
 
 void Screen2Presenter::swPressed()
