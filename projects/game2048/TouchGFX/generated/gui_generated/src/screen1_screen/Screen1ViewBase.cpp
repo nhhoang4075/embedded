@@ -6,30 +6,26 @@
 #include <images/BitmapDatabase.hpp>
 #include <texts/TextKeysAndLanguages.hpp>
 
-Screen1ViewBase::Screen1ViewBase() :
-    buttonCallback(this, &Screen1ViewBase::buttonCallbackHandler)
+Screen1ViewBase::Screen1ViewBase()
 {
     __background.setPosition(0, 0, 240, 320);
     __background.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
     add(__background);
 
-    box1.setPosition(0, 0, 240, 320);
-    box1.setColor(touchgfx::Color::getColorFromRGB(187, 173, 160));
-    add(box1);
+    button1.setXY(70, 254);
+    button1.setBitmaps(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_BUTTON_REGULAR_HEIGHT_36_TINY_ROUND_ACTIVE_ID), touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_BUTTON_REGULAR_HEIGHT_36_TINY_ROUND_PRESSED_ID));
+    add(button1);
 
-    startButton.setXY(0, 135);
-    startButton.setBitmaps(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_BUTTON_REGULAR_HEIGHT_50_MEDIUM_ROUND_ACTION_ID), touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_BUTTON_REGULAR_HEIGHT_50_MEDIUM_ROUND_PRESSED_ID));
-    startButton.setLabelText(touchgfx::TypedText(T___SINGLEUSE_WVRB));
-    startButton.setLabelColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
-    startButton.setLabelColorPressed(touchgfx::Color::getColorFromRGB(255, 255, 255));
-    startButton.setAction(buttonCallback);
-    add(startButton);
+    scalableImage1.setBitmap(touchgfx::Bitmap(BITMAP_IMAGE_ID));
+    scalableImage1.setPosition(0, 0, 240, 320);
+    scalableImage1.setScalingAlgorithm(touchgfx::ScalableImage::NEAREST_NEIGHBOR);
+    add(scalableImage1);
 
-    textHighScore.setXY(11, 225);
-    textHighScore.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
-    textHighScore.setLinespacing(0);
-    textHighScore.setTypedText(touchgfx::TypedText(T___SINGLEUSE_3S6U));
-    add(textHighScore);
+    textArea1.setXY(116, 127);
+    textArea1.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
+    textArea1.setLinespacing(0);
+    textArea1.setTypedText(touchgfx::TypedText(T___SINGLEUSE_RBVA));
+    add(textArea1);
 }
 
 Screen1ViewBase::~Screen1ViewBase()
@@ -40,15 +36,4 @@ Screen1ViewBase::~Screen1ViewBase()
 void Screen1ViewBase::setupScreen()
 {
 
-}
-
-void Screen1ViewBase::buttonCallbackHandler(const touchgfx::AbstractButton& src)
-{
-    if (&src == &startButton)
-    {
-        //startClicked
-        //When startButton clicked change screen to Screen2
-        //Go to Screen2 with screen transition towards East
-        application().gotoScreen2ScreenSlideTransitionEast();
-    }
 }

@@ -10,11 +10,9 @@ Screen1Presenter::Screen1Presenter(Screen1View& v)
 
 void Screen1Presenter::activate()
 {
-    /* Tắt xử lý joystick analog -> Model::tick sẽ bỏ qua move. */
     if (model) model->setGameActive(false);
 
-    /* Hiển thị high score từ Model lên 7-seg của Screen1. */
-    if (model) view.updateHighScore(model->getHighScore());
+//    if (model) view.updateHighScore(model->getHighScore());
 }
 
 void Screen1Presenter::deactivate()

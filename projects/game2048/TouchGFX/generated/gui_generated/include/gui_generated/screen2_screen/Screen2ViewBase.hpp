@@ -13,6 +13,8 @@
 #include <touchgfx/containers/Container.hpp>
 #include <touchgfx/widgets/TextArea.hpp>
 #include <touchgfx/widgets/ButtonWithLabel.hpp>
+#include <touchgfx/widgets/canvas/Line.hpp>
+#include <touchgfx/widgets/canvas/PainterRGB565.hpp>
 
 class Screen2ViewBase : public touchgfx::View<Screen2Presenter>
 {
@@ -54,18 +56,16 @@ protected:
     touchgfx::Box boxGameOver;
     touchgfx::TextArea textArea3;
     touchgfx::ButtonWithLabel returnButton;
+    touchgfx::Line line1;
+    touchgfx::PainterRGB565 line1Painter;
 
 private:
 
     /*
-     * Callback Declarations
+     * Canvas Buffer Size
      */
-    touchgfx::Callback<Screen2ViewBase, const touchgfx::AbstractButton&> buttonCallback;
-
-    /*
-     * Callback Handler Declarations
-     */
-    void buttonCallbackHandler(const touchgfx::AbstractButton& src);
+    static const uint32_t CANVAS_BUFFER_SIZE = 3600;
+    uint8_t canvasBuffer[CANVAS_BUFFER_SIZE];
 
 };
 

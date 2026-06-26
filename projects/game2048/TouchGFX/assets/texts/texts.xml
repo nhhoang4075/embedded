@@ -6,23 +6,20 @@
   <Texts>
     <TextGroup Id="Group1" />
     <TextGroup Id="Unsorted">
+      <Text Id="__SingleUse_RBVA" Alignment="Center" TypographyId="screen1_score">
+        <Translation Language="GB">&lt;value&gt;</Translation>
+      </Text>
       <Text Id="__SingleUse_QGRR" Alignment="Left" TypographyId="Default">
         <Translation Language="GB">Game Over!</Translation>
       </Text>
       <Text Id="__SingleUse_VWGN" Alignment="Center" TypographyId="Default">
         <Translation Language="GB">Return</Translation>
       </Text>
-      <Text Id="__SingleUse_GGFH" Alignment="Left" TypographyId="Default">
-        <Translation Language="GB">Score: &lt;value&gt;</Translation>
+      <Text Id="__SingleUse_GGFH" Alignment="Center" TypographyId="screen2_score">
+        <Translation Language="GB">SCORE&#10;&lt;value&gt;</Translation>
       </Text>
-      <Text Id="__SingleUse_DCXV" Alignment="Left" TypographyId="Default">
-        <Translation Language="GB">High Score: &lt;value&gt;</Translation>
-      </Text>
-      <Text Id="__SingleUse_3S6U" Alignment="Left" TypographyId="Default">
-        <Translation Language="GB">High Score: &lt;value&gt;</Translation>
-      </Text>
-      <Text Id="__SingleUse_WVRB" Alignment="Center" TypographyId="Default">
-        <Translation Language="GB">Start</Translation>
+      <Text Id="__SingleUse_DCXV" Alignment="Center" TypographyId="screen2_score">
+        <Translation Language="GB">BEST&#10;&lt;value&gt;</Translation>
       </Text>
     </TextGroup>
   </Texts>
@@ -30,5 +27,7 @@
     <Typography Id="Default" Font="verdana.ttf" Size="20" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" WildcardCharacters="0123456789 /" />
     <Typography Id="Large" Font="verdana.ttf" Size="40" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" WildcardCharacters="0123456789 /" />
     <Typography Id="Small" Font="verdana.ttf" Size="10" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" WildcardCharacters="0123456789 /" />
+    <Typography Id="screen2_score" Font="ebrimabd.ttf" Size="20" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" WildcardCharacters="0123456789 /" />
+    <Typography Id="screen1_score" Font="ebrimabd.ttf" Size="14" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" WildcardCharacters="0123456789 /" />
   </Typographies>
 </TextDatabase>
