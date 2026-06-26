@@ -119,11 +119,11 @@ Screen2ViewBase::Screen2ViewBase()
     containerGameOver.setPosition(18, 68, 200, 200);
     containerGameOver.setVisible(false);
     boxGameOver.setPosition(0, 0, 200, 200);
-    boxGameOver.setColor(touchgfx::Color::getColorFromRGB(209, 155, 94));
+    boxGameOver.setColor(touchgfx::Color::getColorFromRGB(232, 220, 195));
     containerGameOver.add(boxGameOver);
 
-    textArea3.setXY(39, 49);
-    textArea3.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
+    textArea3.setXY(47, 49);
+    textArea3.setColor(touchgfx::Color::getColorFromRGB(90, 74, 63));
     textArea3.setLinespacing(0);
     textArea3.setTypedText(touchgfx::TypedText(T___SINGLEUSE_QGRR));
     containerGameOver.add(textArea3);
@@ -131,8 +131,8 @@ Screen2ViewBase::Screen2ViewBase()
     returnButton.setXY(33, 111);
     returnButton.setBitmaps(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_BUTTON_REGULAR_HEIGHT_36_SMALL_ROUND_ACTION_ID), touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_BUTTON_REGULAR_HEIGHT_36_SMALL_ROUND_PRESSED_ID));
     returnButton.setLabelText(touchgfx::TypedText(T___SINGLEUSE_VWGN));
-    returnButton.setLabelColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
-    returnButton.setLabelColorPressed(touchgfx::Color::getColorFromRGB(255, 255, 255));
+    returnButton.setLabelColor(touchgfx::Color::getColorFromRGB(255, 253, 208));
+    returnButton.setLabelColorPressed(touchgfx::Color::getColorFromRGB(240, 234, 214));
     containerGameOver.add(returnButton);
 
     add(containerGameOver);
