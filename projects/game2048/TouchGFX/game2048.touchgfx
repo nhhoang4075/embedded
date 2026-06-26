@@ -290,20 +290,25 @@
                 "Width": 200,
                 "Height": 200,
                 "Color": {
-                  "Red": 209,
-                  "Green": 155,
-                  "Blue": 94
+                  "Red": 232,
+                  "Green": 220,
+                  "Blue": 195
                 }
               },
               {
                 "Type": "TextArea",
                 "Name": "textArea3",
-                "X": 39,
+                "X": 47,
                 "Y": 49,
-                "Width": 123,
-                "Height": 23,
+                "Width": 112,
+                "Height": 22,
                 "TextId": "__SingleUse_QGRR",
                 "TextRotation": "0",
+                "Color": {
+                  "Red": 90,
+                  "Green": 74,
+                  "Blue": 63
+                },
                 "AutoSize": true
               },
               {
@@ -318,13 +323,13 @@
                 "TextId": "__SingleUse_VWGN",
                 "ReleasedColor": {
                   "Red": 255,
-                  "Green": 255,
-                  "Blue": 255
+                  "Green": 253,
+                  "Blue": 208
                 },
                 "PressedColor": {
-                  "Red": 255,
-                  "Green": 255,
-                  "Blue": 255
+                  "Red": 240,
+                  "Green": 234,
+                  "Blue": 214
                 },
                 "TextRotation": "0",
                 "Preset": "alternate_theme\\presets\\button\\regular\\height_36\\small_round_action.json"

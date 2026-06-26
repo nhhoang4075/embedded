@@ -9,7 +9,7 @@
       <Text Id="__SingleUse_RBVA" Alignment="Center" TypographyId="screen1_score">
         <Translation Language="GB">&lt;value&gt;</Translation>
       </Text>
-      <Text Id="__SingleUse_QGRR" Alignment="Left" TypographyId="Default">
+      <Text Id="__SingleUse_QGRR" Alignment="Center" TypographyId="screen2_score">
         <Translation Language="GB">Game Over!</Translation>
       </Text>
       <Text Id="__SingleUse_VWGN" Alignment="Center" TypographyId="Default">
