@@ -20,12 +20,22 @@ public:
         gotoScreen1ScreenNoTransition();
     }
 
+    // Screen1
+    void gotoScreen1ScreenNoTransition();
+
+    // Screen2
+    void gotoScreen2ScreenSlideTransitionEast();
+
 protected:
     touchgfx::Callback<FrontendApplicationBase> transitionCallback;
     FrontendHeap& frontendHeap;
     Model& model;
 
+    // Screen1
+    void gotoScreen1ScreenNoTransitionImpl();
 
+    // Screen2
+    void gotoScreen2ScreenSlideTransitionEastImpl();
 };
 
 #endif // FRONTENDAPPLICATIONBASE_HPP
