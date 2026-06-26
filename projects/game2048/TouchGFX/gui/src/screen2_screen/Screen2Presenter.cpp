@@ -2,6 +2,12 @@
 #include <gui/screen2_screen/Screen2Presenter.hpp>
 #include <gui/common/FrontendApplication.hpp>
 
+extern "C"
+{
+#include "stm32f4xx_hal.h"
+#include "main.h"
+}
+
 Screen2Presenter::Screen2Presenter(Screen2View& v)
     : view(v)
 {
@@ -18,6 +24,9 @@ void Screen2Presenter::activate()
     if (g->state == G2048_LOST)
     {
         g2048_init(g, g->rng, g->rng_ctx);
+
+        uint8_t cmd = 0x02;
+        HAL_UART_Transmit(&huart2, &cmd, 1, 5);
     }
 
     view.updateBoard(g->grid);

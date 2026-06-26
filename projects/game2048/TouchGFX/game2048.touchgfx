@@ -5,69 +5,42 @@
         "Name": "Screen1",
         "Components": [
           {
-            "Type": "Box",
-            "Name": "box1",
-            "Width": 240,
-            "Height": 320,
-            "Color": {
-              "Red": 187,
-              "Green": 173,
-              "Blue": 160
-            }
+            "Type": "Button",
+            "Name": "button1",
+            "X": 70,
+            "Y": 254,
+            "Width": 100,
+            "Height": 36,
+            "Pressed": "__generated\\alternate_theme_images_widgets_button_regular_height_36_tiny_round_pressed.png",
+            "Released": "__generated\\alternate_theme_images_widgets_button_regular_height_36_tiny_round_active.png",
+            "Preset": "alternate_theme\\presets\\button\\regular\\height_36\\tiny_round_active.json"
           },
           {
-            "Type": "ButtonWithLabel",
-            "Name": "startButton",
-            "Y": 135,
+            "Type": "ScalableImage",
+            "Name": "scalableImage1",
             "Width": 240,
-            "Height": 50,
-            "Pressed": "__generated\\alternate_theme_images_widgets_button_regular_height_50_medium_round_pressed.png",
-            "Released": "__generated\\alternate_theme_images_widgets_button_regular_height_50_medium_round_action.png",
-            "TextId": "__SingleUse_WVRB",
-            "ReleasedColor": {
-              "Red": 255,
-              "Green": 255,
-              "Blue": 255
-            },
-            "PressedColor": {
-              "Red": 255,
-              "Green": 255,
-              "Blue": 255
-            },
-            "TextRotation": "0",
-            "Preset": "alternate_theme\\presets\\button\\regular\\height_50\\medium_round_action.json"
+            "Height": 320,
+            "Filename": "image.png",
+            "ScalingAlgorithm": "Nearest-neighbor"
           },
           {
             "Type": "TextArea",
-            "Name": "textHighScore",
-            "X": 11,
-            "Y": 225,
-            "Width": 125,
-            "Height": 24,
-            "TextId": "__SingleUse_3S6U",
+            "Name": "textArea1",
+            "X": 116,
+            "Y": 127,
+            "Width": 8,
+            "Height": 15,
+            "TextId": "__SingleUse_RBVA",
             "TextRotation": "0",
             "AutoSize": true,
             "Wildcard1": {}
           }
         ],
-        "Interactions": [
-          {
-            "InteractionName": "startClicked",
-            "Trigger": {
-              "Type": "TriggerClicked",
-              "TriggerComponent": "startButton"
-            },
-            "Action": {
-              "Type": "ActionGotoScreen",
-              "ScreenTransitionType": "ScreenTransitionSlide",
-              "ScreenTransitionDirection": "East",
-              "ActionComponent": "Screen2"
-            }
-          }
-        ]
+        "Interactions": []
       },
       {
         "Name": "Screen2",
+        "CanvasBufferSize": 3600,
         "Components": [
           {
             "Type": "Box",
@@ -252,21 +225,34 @@
           {
             "Type": "TextArea",
             "Name": "textArea1",
-            "Y": 37,
-            "Width": 125,
-            "Height": 24,
+            "X": 159,
+            "Y": 11,
+            "Width": 47,
+            "Height": 44,
             "TextId": "__SingleUse_DCXV",
             "TextRotation": "0",
+            "Color": {
+              "Red": 249,
+              "Green": 246,
+              "Blue": 242
+            },
             "AutoSize": true,
             "Wildcard1": {}
           },
           {
             "Type": "TextArea",
             "Name": "textArea2",
-            "Width": 73,
-            "Height": 24,
+            "X": 27,
+            "Y": 11,
+            "Width": 62,
+            "Height": 44,
             "TextId": "__SingleUse_GGFH",
             "TextRotation": "0",
+            "Color": {
+              "Red": 249,
+              "Green": 246,
+              "Blue": 242
+            },
             "AutoSize": true,
             "Wildcard1": {}
           },
@@ -296,7 +282,7 @@
                 "X": 39,
                 "Y": 49,
                 "Width": 123,
-                "Height": 24,
+                "Height": 23,
                 "TextId": "__SingleUse_QGRR",
                 "TextRotation": "0",
                 "AutoSize": true
@@ -325,6 +311,25 @@
                 "Preset": "alternate_theme\\presets\\button\\regular\\height_36\\small_round_action.json"
               }
             ]
+          },
+          {
+            "Type": "Line",
+            "Name": "line1",
+            "X": 101,
+            "Y": 5,
+            "Width": 40,
+            "Height": 70,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "StartX": 20.0,
+            "StartY": 5.0,
+            "EndX": 20.0,
+            "EndY": 65.0,
+            "LineWidth": 2.0,
+            "LineEndingStyle": "Butt"
           }
         ],
         "Interactions": [
@@ -337,8 +342,7 @@
             "Action": {
               "Type": "ActionGotoScreen",
               "ScreenTransitionType": "ScreenTransitionSlide",
-              "ScreenTransitionDirection": "East",
-              "ActionComponent": "Screen1"
+              "ScreenTransitionDirection": "East"
             }
           }
         ]

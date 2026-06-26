@@ -64,7 +64,6 @@
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
-DMA_HandleTypeDef hdma_adc1;
 
 CRC_HandleTypeDef hcrc;
 
@@ -75,6 +74,8 @@ I2C_HandleTypeDef hi2c3;
 LTDC_HandleTypeDef hltdc;
 
 SPI_HandleTypeDef hspi5;
+
+UART_HandleTypeDef huart2;
 
 SDRAM_HandleTypeDef hsdram1;
 
@@ -99,7 +100,6 @@ uint8_t isRevD = 0; /* Applicable only for STM32F429I DISCOVERY REVD and above *
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_DMA_Init(void);
 static void MX_CRC_Init(void);
 static void MX_I2C3_Init(void);
 static void MX_SPI5_Init(void);
@@ -107,6 +107,7 @@ static void MX_FMC_Init(void);
 static void MX_LTDC_Init(void);
 static void MX_DMA2D_Init(void);
 static void MX_ADC1_Init(void);
+static void MX_USART2_UART_Init(void);
 void StartDefaultTask(void *argument);
 extern void TouchGFX_Task(void *argument);
 
@@ -178,18 +179,14 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_DMA_Init();
   MX_CRC_Init();
   MX_I2C3_Init();
   MX_SPI5_Init();
   MX_FMC_Init();
-  /* Clear toàn bộ vùng SDRAM dùng cho frame/animation buffer về 0 (đen),
-   * tránh nhiễu trước khi TouchGFX vẽ frame đầu. animationStorage @ 0xD0000000
-   * (153KB) + frameBuf @ 0xD0025800 (307KB) = ~460KB; clear 1MB cho an toàn. */
-  for (volatile uint32_t *p = (uint32_t *)0xD0000000; p < (uint32_t *)0xD0100000; p++) *p = 0;
   MX_LTDC_Init();
   MX_DMA2D_Init();
   MX_ADC1_Init();
+  MX_USART2_UART_Init();
   MX_TouchGFX_Init();
   /* Call PreOsInit function */
   MX_TouchGFX_PreOSInit();
@@ -328,7 +325,7 @@ static void MX_ADC1_Init(void)
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc1.Init.NbrOfConversion = 2;
-  hadc1.Init.DMAContinuousRequests = ENABLE;
+  hadc1.Init.DMAContinuousRequests = DISABLE;
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
@@ -516,7 +513,7 @@ static void MX_LTDC_Init(void)
   pLayerCfg.Alpha0 = 0;
   pLayerCfg.BlendingFactor1 = LTDC_BLENDING_FACTOR1_CA;
   pLayerCfg.BlendingFactor2 = LTDC_BLENDING_FACTOR2_CA;
-  pLayerCfg.FBStartAdress = 0xD0000000;   /* SDRAM start, đã clear về 0 ở MX_FMC_Init - lúc TouchGFX chưa override */
+  pLayerCfg.FBStartAdress = 0;
   pLayerCfg.ImageWidth = 240;
   pLayerCfg.ImageHeight = 320;
   pLayerCfg.Backcolor.Blue = 0;
@@ -591,18 +588,35 @@ static void MX_SPI5_Init(void)
 }
 
 /**
-  * Enable DMA controller clock
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
   */
-static void MX_DMA_Init(void)
+static void MX_USART2_UART_Init(void)
 {
 
-  /* DMA controller clock enable */
-  __HAL_RCC_DMA2_CLK_ENABLE();
+  /* USER CODE BEGIN USART2_Init 0 */
 
-  /* DMA interrupt init */
-  /* DMA2_Stream0_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
 
 }
 
@@ -685,7 +699,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(SPI5_NCS_GPIO_Port, SPI5_NCS_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2|GPIO_PIN_11, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12|GPIO_PIN_13, GPIO_PIN_RESET);
@@ -697,12 +711,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : SPI5_NCS_Pin */
-  GPIO_InitStruct.Pin = SPI5_NCS_Pin;
+  /*Configure GPIO pins : SPI5_NCS_Pin PC11 */
+  GPIO_InitStruct.Pin = SPI5_NCS_Pin|GPIO_PIN_11;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(SPI5_NCS_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PC2 */
   GPIO_InitStruct.Pin = GPIO_PIN_2;

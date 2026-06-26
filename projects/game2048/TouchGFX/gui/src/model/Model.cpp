@@ -7,11 +7,20 @@ extern "C"
 #include "game2048.h"
 #include "joystick.h"
 #include "stm32f4xx_hal.h"
+#include "main.h"
 }
 
 static uint32_t simulator_rng(void*)
 {
     return rand();
+}
+
+static void Audio_Send(uint8_t cmd)
+{
+    HAL_UART_Transmit(&huart2,
+                      &cmd,
+                      1,
+                      HAL_MAX_DELAY);
 }
 
 Model::Model() :
@@ -41,6 +50,7 @@ void Model::tick()
 
     if (g2048_move(&game, (g2048_dir_t)dir))
     {
+    	Audio_Send(0x01);
         if (game.score > highScore)
             highScore = game.score;
 
@@ -51,3 +61,5 @@ void Model::tick()
         }
     }
 }
+
+
