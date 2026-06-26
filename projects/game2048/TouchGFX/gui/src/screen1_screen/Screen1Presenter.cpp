@@ -12,7 +12,7 @@ void Screen1Presenter::activate()
 {
     if (model) model->setGameActive(false);
 
-//    if (model) view.updateHighScore(model->getHighScore());
+    if (model) view.updateHighScore(model->getHighScore());
 }
 
 void Screen1Presenter::deactivate()

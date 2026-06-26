@@ -25,18 +25,37 @@
           },
           {
             "Type": "TextArea",
-            "Name": "textArea1",
+            "Name": "textHighScore",
             "X": 116,
             "Y": 127,
             "Width": 8,
             "Height": 15,
             "TextId": "__SingleUse_RBVA",
             "TextRotation": "0",
+            "Color": {
+              "Red": 187,
+              "Green": 173,
+              "Blue": 160
+            },
             "AutoSize": true,
             "Wildcard1": {}
           }
         ],
-        "Interactions": []
+        "Interactions": [
+          {
+            "InteractionName": "Interaction1",
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "button1"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionSlide",
+              "ScreenTransitionDirection": "East",
+              "ActionComponent": "Screen2"
+            }
+          }
+        ]
       },
       {
         "Name": "Screen2",

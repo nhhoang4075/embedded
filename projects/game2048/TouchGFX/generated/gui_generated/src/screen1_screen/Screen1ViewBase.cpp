@@ -6,7 +6,8 @@
 #include <images/BitmapDatabase.hpp>
 #include <texts/TextKeysAndLanguages.hpp>
 
-Screen1ViewBase::Screen1ViewBase()
+Screen1ViewBase::Screen1ViewBase() :
+    buttonCallback(this, &Screen1ViewBase::buttonCallbackHandler)
 {
     __background.setPosition(0, 0, 240, 320);
     __background.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
@@ -14,6 +15,7 @@ Screen1ViewBase::Screen1ViewBase()
 
     button1.setXY(70, 254);
     button1.setBitmaps(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_BUTTON_REGULAR_HEIGHT_36_TINY_ROUND_ACTIVE_ID), touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_BUTTON_REGULAR_HEIGHT_36_TINY_ROUND_PRESSED_ID));
+    button1.setAction(buttonCallback);
     add(button1);
 
     scalableImage1.setBitmap(touchgfx::Bitmap(BITMAP_IMAGE_ID));
@@ -21,11 +23,11 @@ Screen1ViewBase::Screen1ViewBase()
     scalableImage1.setScalingAlgorithm(touchgfx::ScalableImage::NEAREST_NEIGHBOR);
     add(scalableImage1);
 
-    textArea1.setXY(116, 127);
-    textArea1.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
-    textArea1.setLinespacing(0);
-    textArea1.setTypedText(touchgfx::TypedText(T___SINGLEUSE_RBVA));
-    add(textArea1);
+    textHighScore.setXY(116, 127);
+    textHighScore.setColor(touchgfx::Color::getColorFromRGB(187, 173, 160));
+    textHighScore.setLinespacing(0);
+    textHighScore.setTypedText(touchgfx::TypedText(T___SINGLEUSE_RBVA));
+    add(textHighScore);
 }
 
 Screen1ViewBase::~Screen1ViewBase()
@@ -36,4 +38,15 @@ Screen1ViewBase::~Screen1ViewBase()
 void Screen1ViewBase::setupScreen()
 {
 
+}
+
+void Screen1ViewBase::buttonCallbackHandler(const touchgfx::AbstractButton& src)
+{
+    if (&src == &button1)
+    {
+        //Interaction1
+        //When button1 clicked change screen to Screen2
+        //Go to Screen2 with screen transition towards East
+        application().gotoScreen2ScreenSlideTransitionEast();
+    }
 }
