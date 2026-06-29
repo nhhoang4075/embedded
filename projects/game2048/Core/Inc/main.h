@@ -24,9 +24,6 @@
 #define __MAIN_H
 
 #ifdef __cplusplus
-
-extern UART_HandleTypeDef huart2;
-
 extern "C" {
 #endif
 

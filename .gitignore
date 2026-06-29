@@ -40,6 +40,8 @@ MDK-ARM/*vguix.*
 **/Debug/
 **/Release/
 *.launch
+# STM32CubeIDE macOS workspace metadata
+.osx.project
 
 # Build artifacts (objects / final binaries). KHÔNG ignore *.lib vì TouchGFX
 # core là pre-compiled library cần được commit.
