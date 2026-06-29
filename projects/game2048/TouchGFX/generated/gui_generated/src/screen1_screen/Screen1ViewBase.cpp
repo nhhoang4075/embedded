@@ -23,7 +23,7 @@ Screen1ViewBase::Screen1ViewBase() :
     scalableImage1.setScalingAlgorithm(touchgfx::ScalableImage::NEAREST_NEIGHBOR);
     add(scalableImage1);
 
-    textHighScore.setXY(116, 127);
+    textHighScore.setPosition(80, 127, 81, 15);
     textHighScore.setColor(touchgfx::Color::getColorFromRGB(187, 173, 160));
     textHighScore.setLinespacing(0);
     textHighScore.setTypedText(touchgfx::TypedText(T___SINGLEUSE_RBVA));

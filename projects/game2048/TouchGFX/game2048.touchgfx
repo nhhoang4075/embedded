@@ -26,9 +26,9 @@
           {
             "Type": "TextArea",
             "Name": "textHighScore",
-            "X": 116,
+            "X": 80,
             "Y": 127,
-            "Width": 8,
+            "Width": 81,
             "Height": 15,
             "TextId": "__SingleUse_RBVA",
             "TextRotation": "0",
@@ -37,7 +37,6 @@
               "Green": 173,
               "Blue": 160
             },
-            "AutoSize": true,
             "Wildcard1": {}
           }
         ],
