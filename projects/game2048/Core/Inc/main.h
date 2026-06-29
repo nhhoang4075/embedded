@@ -24,9 +24,6 @@
 #define __MAIN_H
 
 #ifdef __cplusplus
-
-extern UART_HandleTypeDef huart2;
-
 extern "C" {
 #endif
 
@@ -57,7 +54,7 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+extern UART_HandleTypeDef huart1;   /* PA9 -> ESP32 D16 audio command */
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
