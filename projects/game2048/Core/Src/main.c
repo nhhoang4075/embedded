@@ -77,6 +77,7 @@ LTDC_HandleTypeDef hltdc;
 SPI_HandleTypeDef hspi5;
 
 UART_HandleTypeDef huart2;
+UART_HandleTypeDef huart1;   /* USART1 PA9 -> ESP32 D16 (PA2 conflict tren F429-DISC1) */
 
 SDRAM_HandleTypeDef hsdram1;
 
@@ -110,6 +111,7 @@ static void MX_LTDC_Init(void);
 static void MX_DMA2D_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_USART1_UART_Init(void);   /* manual, khong qua CubeMX */
 void StartDefaultTask(void *argument);
 extern void TouchGFX_Task(void *argument);
 
@@ -190,6 +192,7 @@ int main(void)
   MX_DMA2D_Init();
   MX_ADC1_Init();
   MX_USART2_UART_Init();
+  MX_USART1_UART_Init();
   MX_TouchGFX_Init();
   /* Call PreOsInit function */
   MX_TouchGFX_PreOSInit();
@@ -621,6 +624,35 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 2 */
 
+}
+
+/* USART1 PA9 (TX) -> ESP32 D16 cho audio command.
+ * Khong qua CubeMX vi PA2 cua USART2 bi conflict tren F429-DISC1 board. */
+static void MX_USART1_UART_Init(void)
+{
+  __HAL_RCC_USART1_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  GPIO_InitTypeDef gpio = {0};
+  gpio.Pin       = GPIO_PIN_9;
+  gpio.Mode      = GPIO_MODE_AF_PP;
+  gpio.Pull      = GPIO_NOPULL;
+  gpio.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
+  gpio.Alternate = GPIO_AF7_USART1;
+  HAL_GPIO_Init(GPIOA, &gpio);
+
+  huart1.Instance        = USART1;
+  huart1.Init.BaudRate   = 115200;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits   = UART_STOPBITS_1;
+  huart1.Init.Parity     = UART_PARITY_NONE;
+  huart1.Init.Mode       = UART_MODE_TX;       /* chi can TX, ESP32 khong gui ve */
+  huart1.Init.HwFlowCtl  = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
 }
 
 /**
