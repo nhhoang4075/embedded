@@ -365,7 +365,8 @@
             "Action": {
               "Type": "ActionGotoScreen",
               "ScreenTransitionType": "ScreenTransitionSlide",
-              "ScreenTransitionDirection": "East"
+              "ScreenTransitionDirection": "East",
+              "ActionComponent": "Screen1"
             }
           }
         ]

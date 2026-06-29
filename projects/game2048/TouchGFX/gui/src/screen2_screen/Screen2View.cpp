@@ -1,4 +1,5 @@
 #include <gui/screen2_screen/Screen2View.hpp>
+#include <gui/common/FrontendApplication.hpp>
 #include <touchgfx/Bitmap.hpp>
 #include <images/BitmapDatabase.hpp>
 #include <touchgfx/Unicode.hpp>
@@ -22,6 +23,16 @@ void Screen2View::setupScreen()
 
     textArea1.resizeToCurrentText();
     textArea1.invalidate();
+
+    returnButtonCb = touchgfx::Callback<Screen2View, const touchgfx::AbstractButton&>(
+        this, &Screen2View::returnButtonClicked);
+    returnButton.setAction(returnButtonCb);
+}
+
+void Screen2View::returnButtonClicked(const touchgfx::AbstractButton& /*src*/)
+{
+    static_cast<FrontendApplication*>(touchgfx::Application::getInstance())
+        ->gotoScreen1ScreenNoTransition();
 }
 
 void Screen2View::tearDownScreen()
