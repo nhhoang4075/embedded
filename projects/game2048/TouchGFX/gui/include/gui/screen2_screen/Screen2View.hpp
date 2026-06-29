@@ -3,8 +3,9 @@
 
 #include <gui_generated/screen2_screen/Screen2ViewBase.hpp>
 #include <gui/screen2_screen/Screen2Presenter.hpp>
-#include <gui/common/SevenSegDigits4.hpp>
+#include <touchgfx/Callback.hpp>
 #include <touchgfx/Unicode.hpp>
+#include <touchgfx/widgets/AbstractButton.hpp>
 
 class Screen2View : public Screen2ViewBase
 {
@@ -28,9 +29,9 @@ private:
     Unicode::UnicodeChar scoreBuffer[SCORE_BUFFER_SIZE];
     Unicode::UnicodeChar highScoreBuffer[SCORE_BUFFER_SIZE];
 
-    /* 7-seg tạm hiển thị điểm hiện tại (góc trên-phải Screen2, y=8..26).
-     * Bỏ khi font có glyph 0-9. */
-    SevenSegDigits4 scoreSeg;
+    /* Callback chạm nút Return trên popup Game Over (Designer chưa wire). */
+    touchgfx::Callback<Screen2View, const touchgfx::AbstractButton&> returnButtonCb;
+    void returnButtonClicked(const touchgfx::AbstractButton& src);
 };
 
 #endif // SCREEN2VIEW_HPP

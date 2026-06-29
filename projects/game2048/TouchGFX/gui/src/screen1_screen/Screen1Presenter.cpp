@@ -10,9 +10,12 @@ Screen1Presenter::Screen1Presenter(Screen1View& v)
 
 void Screen1Presenter::activate()
 {
-    if (model) model->setGameActive(false);
-
-    if (model) view.updateHighScore(model->getHighScore());
+    if (model)
+    {
+        model->setGameActive(false);
+        model->playSfx(AUDIO_BGM_PLAY);   // bat nhac nen tren menu
+        view.updateHighScore(model->getHighScore());
+    }
 }
 
 void Screen1Presenter::deactivate()

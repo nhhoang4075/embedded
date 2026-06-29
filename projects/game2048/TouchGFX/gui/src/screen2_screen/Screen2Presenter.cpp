@@ -15,18 +15,20 @@ Screen2Presenter::Screen2Presenter(Screen2View& v)
 
 void Screen2Presenter::activate()
 {
+    if (!model) return;
+
     /* Bật xử lý joystick analog cho game. */
-    if (model) model->setGameActive(true);
+    model->setGameActive(true);
+
+    /* Tat nhac nen khi vao gameplay -> SFX khong bi trong am voi BGM. */
+    model->playSfx(AUDIO_BGM_STOP);
 
     /* Nếu ván trước đã thua, auto-start ván mới khi quay lại Screen2.
-     * High score nằm trong Model nên không bị reset. */
+     * Model::resetGame() tự bắn SFX START. High score giữ nguyên. */
     g2048_game_t *g = model->getGame();
     if (g->state == G2048_LOST)
     {
-        g2048_init(g, g->rng, g->rng_ctx);
-
-        uint8_t cmd = 0x02;
-        HAL_UART_Transmit(&huart2, &cmd, 1, 5);
+        model->resetGame();
     }
 
     view.updateBoard(g->grid);
@@ -57,7 +59,17 @@ void Screen2Presenter::scoreChanged(uint32_t score)
 
 void Screen2Presenter::swPressed()
 {
-    /* Ấn SW từ Screen2 -> thoát về Screen1. Điểm vẫn giữ trong Model. */
+    g2048_game_t *g = model->getGame();
+
+    /* Đang chơi -> ép game over (highScore đã được Model::tick cập nhật real-time). */
+    if (g->state != G2048_LOST)
+    {
+        g->state = G2048_LOST;
+        view.showGameOver();
+        return;
+    }
+
+    /* Popup Game Over đang hiện -> SW = nút Return, về Screen1. */
     static_cast<FrontendApplication*>(Application::getInstance())
         ->gotoScreen1ScreenNoTransition();
 }
