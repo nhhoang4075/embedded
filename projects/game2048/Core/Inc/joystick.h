@@ -36,10 +36,10 @@ extern "C" {
  *  - JOY_SWAP_XY : gạt ngang lại đi dọc và ngược lại (joystick lắp xoay 90°) -> để 1.
  */
 #ifndef JOY_INVERT_X
-#define JOY_INVERT_X  1
+#define JOY_INVERT_X  0
 #endif
 #ifndef JOY_INVERT_Y
-#define JOY_INVERT_Y  1
+#define JOY_INVERT_Y  0
 #endif
 #ifndef JOY_SWAP_XY
 #define JOY_SWAP_XY   0
