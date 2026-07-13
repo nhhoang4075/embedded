@@ -67,11 +67,20 @@ static constexpr uint8_t CMD_BGM_STOP  = static_cast<uint8_t>(AudioCmd::BgmStop)
 // Audio paths
 // Thẻ SD đã format FAT32; BGM và các file SFX đặt dưới thư mục /audio/.
 static const char *BGM_PATH        = "/audio/bgm.mp3";
-static const char *MOVE_PATH       = "/audio/move.wav";
-static const char *MERGE_PATH      = "/audio/merge.wav";
-static const char *START_PATH      = "/audio/start.wav";
-static const char *OVER_PATH       = "/audio/over.wav";
-static const char *NEW_HIGH_PATH   = "/audio/highscore.wav";
+/* Bảng ánh xạ opcode SFX → file. Thêm SFX mới chỉ cần một hàng —
+ * không đụng switch, không tách hằng số PATH riêng lẻ. BGM PLAY/STOP
+ * là hai case đặc biệt xử lý riêng bên dưới. */
+struct SfxEntry {
+    uint8_t     opcode;
+    const char* path;
+};
+static const SfxEntry kSfxTable[] = {
+    { CMD_MOVE,     "/audio/move.wav"      },
+    { CMD_MERGE,    "/audio/merge.wav"     },
+    { CMD_START,    "/audio/start.wav"     },
+    { CMD_OVER,     "/audio/over.wav"      },
+    { CMD_NEW_HIGH, "/audio/highscore.wav" },
+};
 
 //============================
 // Audio globals
@@ -209,25 +218,28 @@ void loop()
         uint8_t cmd = Serial2.read();
         Serial.printf("[UART RX] 0x%02X\n", cmd);
 
-        switch (cmd) {
-            case CMD_MOVE:     playSfx(MOVE_PATH);     break;
-            case CMD_MERGE:    playSfx(MERGE_PATH);    break;
-            case CMD_START:    playSfx(START_PATH);    break;
-            case CMD_OVER:     playSfx(OVER_PATH);     break;
-            case CMD_NEW_HIGH: playSfx(NEW_HIGH_PATH); break;
-            case CMD_BGM_PLAY:
-                bgmEnabled = true;
-                Serial.println("[BGM] enabled");
+        /* Tìm trong bảng SFX trước. Trúng thì phát rồi ra. */
+        bool dispatched = false;
+        for (const auto& e : kSfxTable) {
+            if (e.opcode == cmd) {
+                playSfx(e.path);
+                dispatched = true;
                 break;
-            case CMD_BGM_STOP:
-                bgmEnabled = false;
-                if (bgm->isRunning()) bgm->stop();
-                if (bgmFile) { delete bgmFile; bgmFile = nullptr; }
-                Serial.println("[BGM] stopped");
-                break;
-            default:
-                Serial.printf("[!] Unknown cmd 0x%02X\n", cmd);
-                break;
+            }
+        }
+        if (dispatched) return;
+
+        /* BGM là hai case stateful, xử lý riêng. */
+        if (cmd == CMD_BGM_PLAY) {
+            bgmEnabled = true;
+            Serial.println("[BGM] enabled");
+        } else if (cmd == CMD_BGM_STOP) {
+            bgmEnabled = false;
+            if (bgm->isRunning()) bgm->stop();
+            if (bgmFile) { delete bgmFile; bgmFile = nullptr; }
+            Serial.println("[BGM] stopped");
+        } else {
+            Serial.printf("[!] Unknown cmd 0x%02X\n", cmd);
         }
     }
 }
