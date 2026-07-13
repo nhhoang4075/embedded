@@ -13,20 +13,11 @@ void Screen2Presenter::activate()
 {
     if (!model) return;
 
-    /* Bật xử lý joystick analog cho game. */
-    model->setGameActive(true);
+    /* Model tự bật joystick, tắt BGM, auto-reset nếu cần — Presenter
+     * chỉ ra tín hiệu "vào ván chơi". */
+    model->enterGame();
 
-    /* Tat nhac nen khi vao gameplay -> SFX khong bi trong am voi BGM. */
-    model->playSfx(AUDIO_BGM_STOP);
-
-    /* Nếu ván trước đã thua, auto-start ván mới khi quay lại Screen2.
-     * Model::resetGame() tự bắn SFX START. High score giữ nguyên. */
     g2048_game_t *g = model->getGame();
-    if (g->state == G2048_LOST)
-    {
-        model->resetGame();
-    }
-
     view.updateBoard(g->grid);
     view.updateScore(model->getScore());
     view.updateHighScore(model->getHighScore());
@@ -34,7 +25,8 @@ void Screen2Presenter::activate()
 
 void Screen2Presenter::deactivate()
 {
-    if (model) model->setGameActive(false);
+    /* Deactivate không đồng nghĩa "vào menu" — có thể chuyển sang màn
+     * khác. enterMenu chỉ gọi khi Screen1Presenter::activate. */
 }
 
 void Screen2Presenter::boardChanged()

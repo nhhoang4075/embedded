@@ -18,8 +18,8 @@ static uint32_t simulator_rng(void*)
 
 Model::Model() :
     modelListener(0),
+    phase(Phase::Menu),
     highScore(0),
-    gameActive(false),
     recordBroken(false),
     overEmitted(false),
     rngSeeded(false)
@@ -32,6 +32,25 @@ Model::Model() :
     /* Nạp điểm cao đã lưu (flash sector 11). Nếu chưa từng lưu hoặc
      * flash trắng thì store.load() trả 0. */
     highScore = scoreStore.load();
+}
+
+void Model::enterMenu()
+{
+    phase = Phase::Menu;
+    /* BGM chỉ chạy khi ở menu — Screen1 và Screen2 tránh chồng âm. */
+    playSfx(AudioCmd::BgmPlay);
+}
+
+void Model::enterGame()
+{
+    phase = Phase::Game;
+    playSfx(AudioCmd::BgmStop);
+
+    /* Nếu ván trước đã thua, tự động khởi động ván mới khi vào Screen2. */
+    if (game.state == G2048_LOST)
+    {
+        resetGame();
+    }
 }
 
 void Model::playSfx(AudioCmd cmd)
@@ -88,8 +107,8 @@ void Model::tick()
         }
     }
 
-    /* Joystick analog chỉ áp dụng khi đang ở Screen2 (chơi game). */
-    if (!gameActive)
+    /* Joystick analog chỉ áp dụng khi đang ở phase GAME (Screen2). */
+    if (phase != Phase::Game)
         return;
 
     /* Đã thua thì không xử lý nước đi nữa, đợi resetGame. */

@@ -47,12 +47,17 @@ public:
         return highScore;
     }
 
-    void setGameActive(bool active)
-    {
-        gameActive = active;
-    }
+    /* Chuyển sang state MENU: tắt joystick analog, phát BGM. Gọi khi
+     * Presenter menu activate. Model đóng gói mọi hành vi transition
+     * — Presenter chỉ nói "vào menu", không cần biết BGM hay flag. */
+    void enterMenu();
 
-    /* Reset ván + bắn SFX start. Gọi từ Screen2Presenter khi vào ván mới. */
+    /* Chuyển sang state GAME: bật joystick analog, tắt BGM, auto-reset
+     * nếu ván trước đã LOST. Gọi khi Presenter game activate. */
+    void enterGame();
+
+    /* Reset ván + bắn SFX start. enterGame gọi tự động nếu cần —
+     * Presenter thường không phải gọi trực tiếp. */
     void resetGame();
 
     /* Gửi 1 lệnh âm thanh qua AudioBus (framing 2 byte, fire-and-forget). */
@@ -69,9 +74,13 @@ public:
 private:
     ModelListener* modelListener;
 
+    /* Trạng thái điều hướng: Menu (Screen1) hay Game (Screen2). Thay
+     * cho gameActive bool cũ — API sự kiện, không phải cấu hình. */
+    enum class Phase { Menu, Game };
+    Phase        phase;
+
     g2048_game_t game;
     uint32_t     highScore;       /* cache — nạp từ store lúc boot */
-    bool         gameActive;
 
     bool         recordBroken;    /* đã phát NEW_HIGH chưa trong ván này */
     bool         overEmitted;     /* đã phát OVER chưa trong ván này */

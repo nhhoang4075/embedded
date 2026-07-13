@@ -12,8 +12,9 @@ void Screen1Presenter::activate()
 {
     if (model)
     {
-        model->setGameActive(false);
-        model->playSfx(AUDIO_BGM_PLAY);   // bat nhac nen tren menu
+        /* Model tự lo tắt joystick + phát BGM — Presenter chỉ ra tín hiệu
+         * "vào menu". */
+        model->enterMenu();
         view.updateHighScore(model->getHighScore());
     }
 }
