@@ -6,6 +6,7 @@
 #include <touchgfx/Callback.hpp>
 #include <touchgfx/Unicode.hpp>
 #include <touchgfx/widgets/AbstractButton.hpp>
+#include <touchgfx/widgets/canvas/ScalableImage.hpp>
 
 class Screen2View : public Screen2ViewBase
 {
@@ -28,6 +29,10 @@ private:
     static const uint16_t SCORE_BUFFER_SIZE = 12;
     Unicode::UnicodeChar scoreBuffer[SCORE_BUFFER_SIZE];
     Unicode::UnicodeChar highScoreBuffer[SCORE_BUFFER_SIZE];
+
+    /* Bảng con trỏ 4×4 tới các ScalableImage sinh bởi Designer — điền
+     * trong setupScreen. updateBoard chỉ cần loop qua bảng này. */
+    touchgfx::ScalableImage* tiles[4][4];
 
     /* Callback chạm nút Return trên popup Game Over (Designer chưa wire). */
     touchgfx::Callback<Screen2View, const touchgfx::AbstractButton&> returnButtonCb;

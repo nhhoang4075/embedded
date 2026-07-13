@@ -2,11 +2,7 @@
 #include <gui/screen2_screen/Screen2Presenter.hpp>
 #include <gui/common/FrontendApplication.hpp>
 
-extern "C"
-{
-#include "stm32f4xx_hal.h"
-#include "main.h"
-}
+/* Presenter chỉ chuyển sự kiện Model ↔ View — không cần HAL/main.h nữa. */
 
 Screen2Presenter::Screen2Presenter(Screen2View& v)
     : view(v)
