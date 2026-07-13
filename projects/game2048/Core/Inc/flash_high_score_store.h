@@ -10,6 +10,7 @@
 #ifndef GAME2048_FLASH_HIGH_SCORE_STORE_H
 #define GAME2048_FLASH_HIGH_SCORE_STORE_H
 
+#ifdef __cplusplus
 #include "high_score_store.h"
 
 class FlashHighScoreStore : public HighScoreStore
@@ -18,5 +19,15 @@ public:
     uint32_t load() override;
     void     save(uint32_t score) override;
 };
+
+extern "C" {
+#endif
+
+/* C API cho hàm reset — main.c gọi khi phát hiện SW được giữ lúc boot. */
+void flash_high_score_reset(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* GAME2048_FLASH_HIGH_SCORE_STORE_H */

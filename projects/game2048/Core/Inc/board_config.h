@@ -44,6 +44,18 @@
 #define BOARD_AUDIO_UART     (&huart1)   /* Cần include main.h ở nơi dùng */
 
 /* ------------------------------------------------------------------ */
+/* Nút User B1 (xanh) — dùng làm reset high score trên menu           */
+/* ------------------------------------------------------------------ */
+
+/* PA0 trên F429I-DISC1 nối tới nút B1 màu xanh. Board có pull-down
+ * ngoại 10 kΩ, nút bấm nối chân lên VDD → pressed = HIGH.
+ * CubeMX cấu hình PA0 = GPIO_Input, No pull, user label USER_BTN.
+ * main.h sinh USER_BTN_Pin / USER_BTN_GPIO_Port — alias lại cho nhất
+ * quán với các định danh BOARD_* khác trong file này. */
+#define BOARD_USER_BTN_PORT    USER_BTN_GPIO_Port
+#define BOARD_USER_BTN_PIN     USER_BTN_Pin
+
+/* ------------------------------------------------------------------ */
 /* Flash sector dành cho HighScoreStore                                */
 /* ------------------------------------------------------------------ */
 

@@ -27,8 +27,9 @@
 #include "Components/ili9341/ili9341.h"
 #include "joystick.h"
 #include "platform_clock.h"
-#include "bsp_lcd_io.h"       /* LCD_IO_*, IOE_* shim ra khỏi main.c */
-#include "bsp_board.h"        /* isRevD detect + LCD DisplayOn workaround */
+#include "bsp_lcd_io.h"                /* LCD_IO_*, IOE_* shim ra khỏi main.c */
+#include "board_config.h"              /* BOARD_USER_BTN_* macros */
+#include "bsp_board.h"                 /* isRevD detect + LCD DisplayOn workaround */
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -174,10 +175,14 @@ int main(void)
   /* USER CODE BEGIN 2 */
   /* Bật DWT->CYCCNT cho platform_clock (entropy + timer high-res). */
   platform_clock_init();
+
   /* Detect board rev (revC vs revD) qua WHO_AM_I gyro trên SPI5. */
   bsp_board_detect_rev();
+
   /* USART1 (PA9 → ESP32 audio) đã do MX_USART1_UART_Init() ở trên khởi
-   * tạo — audio_uart.c chỉ wrap HAL_UART_Transmit qua huart1 handle. */
+   * tạo — audio_uart.c chỉ wrap HAL_UART_Transmit qua huart1 handle.
+   * User B1 (PA0, xanh) đã do MX_GPIO_Init() cấu hình — Model đọc trực
+   * tiếp qua HAL_GPIO_ReadPin(USER_BTN_GPIO_Port, USER_BTN_Pin). */
   joystick_init(&hadc1);
   /* USER CODE END 2 */
 
@@ -745,6 +750,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : USER_BTN_Pin */
+  GPIO_InitStruct.Pin = USER_BTN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(USER_BTN_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PD12 PD13 */
   GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_13;

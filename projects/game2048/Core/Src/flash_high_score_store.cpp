@@ -44,6 +44,14 @@ uint32_t FlashHighScoreStore::load()
     return r->score;
 }
 
+extern "C" void flash_high_score_reset(void)
+{
+    /* Xóa record bằng cách ghi score = 0. Record thành hợp lệ (magic
+     * + checksum khớp) nên load() sẽ trả 0 thay vì raw 0xFF sector. */
+    FlashHighScoreStore store;
+    store.save(0);
+}
+
 void FlashHighScoreStore::save(uint32_t score)
 {
     HAL_FLASH_Unlock();

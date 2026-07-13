@@ -30,3 +30,8 @@ void Screen1Presenter::swPressed()
     static_cast<FrontendApplication*>(Application::getInstance())
         ->gotoScreen2ScreenSlideTransitionEast();
 }
+
+void Screen1Presenter::highScoreChanged(uint32_t highScore)
+{
+    view.updateHighScore(highScore);
+}

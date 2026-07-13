@@ -85,6 +85,7 @@ private:
     bool         recordBroken;    /* đã phát NEW_HIGH chưa trong ván này */
     bool         overEmitted;     /* đã phát OVER chưa trong ván này */
     bool         rngSeeded;       /* đã reseed sau user input đầu tiên chưa */
+    bool         userBtnPrev;     /* trạng thái B1 trước — cho edge trigger */
 
     UartAudioBus          audioBus;   /* production; test dùng FakeAudioBus */
     FlashHighScoreStore   scoreStore; /* production; test dùng InMemory */

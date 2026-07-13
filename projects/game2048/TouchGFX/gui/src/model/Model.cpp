@@ -7,6 +7,9 @@ extern "C"
 #include "game2048.h"
 #include "joystick.h"
 #include "platform_clock.h"
+#include "board_config.h"
+#include "flash_high_score_store.h"
+#include "stm32f4xx_hal.h"
 }
 
 /* Adapter cho g2048_init: game core cần một callback rng theo signature
@@ -22,7 +25,8 @@ Model::Model() :
     highScore(0),
     recordBroken(false),
     overEmitted(false),
-    rngSeeded(false)
+    rngSeeded(false),
+    userBtnPrev(false)
 {
     /* Seed tạm thời bằng tick — sẽ được thay bằng reseed thực khi user
      * tương tác lần đầu (reseedRngIfNeeded). */
@@ -89,6 +93,23 @@ void Model::tick()
     {
         reseedRngIfNeeded();     /* lần đầu user chạm → nạp entropy thật */
         modelListener->swPressed();
+    }
+
+    /* User B1 (nút xanh trên board, PA0 active-HIGH) chỉ hoạt động khi
+     * ở Screen1 menu — bấm để reset high score. Bỏ qua khi đang chơi
+     * để tránh reset nhầm. Edge trigger: chỉ fire một lần mỗi lần bấm. */
+    if (phase == Phase::Menu)
+    {
+        bool userBtnNow = (HAL_GPIO_ReadPin(BOARD_USER_BTN_PORT,
+                                            BOARD_USER_BTN_PIN) == GPIO_PIN_SET);
+        if (userBtnNow && !userBtnPrev)
+        {
+            flash_high_score_reset();
+            highScore = 0;
+            recordBroken = false;
+            if (modelListener) modelListener->highScoreChanged(0);
+        }
+        userBtnPrev = userBtnNow;
     }
 
     /* Phát OVER sfx khi vừa transition vào LOST. Bắt được cả 2 đường:

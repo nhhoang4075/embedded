@@ -28,6 +28,9 @@ public:
     /* SW joystick: Screen1 -> goto Screen2 (start chơi game). */
     virtual void swPressed();
 
+    /* Cập nhật hiển thị high score ngay khi user bấm B1 reset. */
+    virtual void highScoreChanged(uint32_t highScore);
+
     virtual ~Screen1Presenter() {}
 
 private:
