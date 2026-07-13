@@ -40,20 +40,8 @@ static uint32_t s_sw_last_ms  = 0;
 /* Khởi tạo phần cứng                                                 */
 /* ------------------------------------------------------------------ */
 
-static void sw_gpio_init(void)
-{
-    /* GPIOG clock — port của BOARD_JOY_SW_PIN mặc định. Nếu port đổi
-     * (chỉnh board_config.h), cập nhật dòng dưới hoặc dời hẳn phần
-     * bật clock sang MX_GPIO_Init. */
-    __HAL_RCC_GPIOG_CLK_ENABLE();
-
-    GPIO_InitTypeDef gpio = {0};
-    gpio.Pin   = BOARD_JOY_SW_PIN;
-    gpio.Mode  = GPIO_MODE_INPUT;
-    gpio.Pull  = GPIO_PULLUP;
-    gpio.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(BOARD_JOY_SW_PORT, &gpio);
-}
+/* Chân SW (PG3) do CubeMX cấu hình sẵn qua MX_GPIO_Init() — Input mode,
+ * Pull-up. Không cần khởi tạo lại ở đây. */
 
 /* Xoá toàn bộ cờ DMA2 Stream 0 (TCIF0/HTIF0/TEIF0/DMEIF0/FEIF0) trước
  * khi restart — cờ tồn đọng sẽ khiến bit EN không lên lại được. */
@@ -108,7 +96,8 @@ void joystick_init(ADC_HandleTypeDef *hadc)
     s_sw_released = true;
     s_sw_last_ms  = 0;
 
-    sw_gpio_init();
+    /* Chân SW do CubeMX MX_GPIO_Init() đã cấu hình xong (Input pull-up
+     * trên PG3). Ở đây chỉ cần start DMA và calibrate tâm joystick. */
     start_dma();
     calibrate_center();
 }

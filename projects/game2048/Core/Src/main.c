@@ -26,7 +26,6 @@
 /* USER CODE BEGIN Includes */
 #include "Components/ili9341/ili9341.h"
 #include "joystick.h"
-#include "audio_uart.h"
 #include "platform_clock.h"
 #include "bsp_lcd_io.h"       /* LCD_IO_*, IOE_* shim ra khỏi main.c */
 #include "bsp_board.h"        /* isRevD detect + LCD DisplayOn workaround */
@@ -78,8 +77,8 @@ LTDC_HandleTypeDef hltdc;
 
 SPI_HandleTypeDef hspi5;
 
+UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
-/* huart1 (USART1 PA9 → ESP32) đã chuyển sang audio_uart.c, giữ static bên đó. */
 
 SDRAM_HandleTypeDef hsdram1;
 
@@ -113,6 +112,7 @@ static void MX_LTDC_Init(void);
 static void MX_DMA2D_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_USART1_UART_Init(void);
 void StartDefaultTask(void *argument);
 extern void TouchGFX_Task(void *argument);
 
@@ -165,6 +165,7 @@ int main(void)
   MX_DMA2D_Init();
   MX_ADC1_Init();
   MX_USART2_UART_Init();
+  MX_USART1_UART_Init();
   MX_TouchGFX_Init();
   /* Call PreOsInit function */
   MX_TouchGFX_PreOSInit();
@@ -173,8 +174,8 @@ int main(void)
   platform_clock_init();
   /* Detect board rev (revC vs revD) qua WHO_AM_I gyro trên SPI5. */
   bsp_board_detect_rev();
-  /* Cấu hình USART1 PA9 gửi lệnh âm thanh sang ESP32. */
-  audio_uart_init();
+  /* USART1 (PA9 → ESP32 audio) đã do MX_USART1_UART_Init() ở trên khởi
+   * tạo — audio_uart.c chỉ wrap HAL_UART_Transmit qua huart1 handle. */
   joystick_init(&hadc1);
   /* USER CODE END 2 */
 
@@ -557,6 +558,39 @@ static void MX_SPI5_Init(void)
 }
 
 /**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 115200;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
+
+}
+
+/**
   * @brief USART2 Initialization Function
   * @param None
   * @retval None
@@ -588,9 +622,6 @@ static void MX_USART2_UART_Init(void)
   /* USER CODE END USART2_Init 2 */
 
 }
-
-/* MX_USART1_UART_Init đã chuyển sang audio_uart.c — main.c gọi qua
- * audio_uart_init() trong USER CODE BEGIN 2. */
 
 /**
   * Enable DMA controller clock
@@ -719,6 +750,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : JOY_SW_Pin */
+  GPIO_InitStruct.Pin = JOY_SW_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(JOY_SW_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
   /* USER CODE END MX_GPIO_Init_2 */
