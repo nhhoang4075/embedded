@@ -1,26 +1,14 @@
 /*
- * audio_uart.c — Wrapper mỏng trên HAL_UART_Transmit gửi lệnh âm thanh
- * sang ESP32.
+ * audio_uart.c — Bọc HAL_UART_Transmit qua huart1 do CubeMX sinh.
  *
- * Sau khi USART1 được đưa vào CubeMX, MX_USART1_UART_Init() do CubeMX
- * sinh đã lo phần khởi tạo. File này chỉ còn expose 2 API:
- *
- *   audio_uart_init() — no-op (giữ interface cho tương thích ngược,
- *                       tránh phải sửa main.c mỗi khi đổi backend).
- *   audio_uart_send() — gửi buffer thô với timeout 5 ms, non-blocking
- *                       thực tế vì payload chỉ 2 byte / lệnh.
+ * Không giữ trạng thái, không expose handle ra ngoài. Chỉ một hàm
+ * duy nhất — audio_uart_send() — được AudioBus (TouchGFX layer) gọi.
  */
 #include "audio_uart.h"
 #include "stm32f4xx_hal.h"
 
-/* Handle do CubeMX sinh trong main.c. */
+/* Handle do CubeMX sinh trong main.c (MX_USART1_UART_Init). */
 extern UART_HandleTypeDef huart1;
-
-bool audio_uart_init(void)
-{
-    /* CubeMX đã init trong MX_USART1_UART_Init() — không cần làm gì thêm. */
-    return true;
-}
 
 void audio_uart_send(const uint8_t *data, size_t len)
 {

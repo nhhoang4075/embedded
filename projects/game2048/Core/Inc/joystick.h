@@ -67,7 +67,7 @@ void joystick_init(ADC_HandleTypeDef *hadc);
  * Quét joystick. Trả về JOY_DIR_NONE nếu không có sự kiện, hoặc 1 hướng
  * khi vừa đẩy qua ngưỡng (mỗi lần đẩy chỉ phát 1 lần).
  */
-joy_dir_t joystick_poll(void);
+joy_dir_t joystick_read(void);
 
 /*
  * Kiểm tra nút SW. Trả về true ĐÚNG 1 LẦN khi vừa được ấn xuống

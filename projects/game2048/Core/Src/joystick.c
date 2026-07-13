@@ -2,7 +2,7 @@
  * joystick.c — Đọc joystick 2 trục qua ADC1 + DMA2 Stream 0 (circular).
  *
  * Chế độ: SCAN + CONTINUOUS + DMA Circular, NDTR = 2 (X rồi Y).
- * s_buf[] luôn có giá trị ADC mới nhất → joystick_poll() chỉ đọc.
+ * s_buf[] luôn có giá trị ADC mới nhất → joystick_read() chỉ đọc.
  *
  * Phòng ngự:
  *   - Tắt DMA TC/HT/TE IT và ADC OVR IT (không cần IRQ, tránh preempt LTDC).
@@ -10,7 +10,7 @@
  *   - Sample time 56 chu kỳ + DMAContinuousRequests=ENABLE để tránh OVR.
  *   - s_buf ở BSS (SRAM1, DMA truy cập được).
  *
- * Cấu trúc: mỗi bước xử lý là một hàm nhỏ, joystick_poll() chỉ điều phối.
+ * Cấu trúc: mỗi bước xử lý là một hàm nhỏ, joystick_read() chỉ điều phối.
  */
 #include "joystick.h"
 #include "board_config.h"
@@ -127,7 +127,7 @@ bool joystick_sw_pressed(void)
 }
 
 /* ------------------------------------------------------------------ */
-/* joystick_poll — điều phối bốn bước                                 */
+/* joystick_read — điều phối bốn bước                                 */
 /* ------------------------------------------------------------------ */
 
 /* 1) Watchdog: nếu DMA stream đã chết (bit EN = 0) hoặc ADC vừa
@@ -193,7 +193,7 @@ static joy_dir_t edge_trigger(int32_t x, int32_t y)
     return JOY_NONE;
 }
 
-joy_dir_t joystick_poll(void)
+joy_dir_t joystick_read(void)
 {
     if (!s_hadc) return JOY_NONE;
 

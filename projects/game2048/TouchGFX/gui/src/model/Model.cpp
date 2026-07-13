@@ -115,7 +115,7 @@ void Model::tick()
     if (game.state == G2048_LOST)
         return;
 
-    joy_dir_t dir = joystick_poll();
+    joy_dir_t dir = joystick_read();
     if (dir == JOY_NONE)
         return;
 
