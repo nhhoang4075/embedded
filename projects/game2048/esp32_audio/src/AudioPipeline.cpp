@@ -3,7 +3,7 @@
 
 /* Hằng gain gộp một chỗ — muốn tinh chỉnh chỉ sửa ở đây. */
 static constexpr float MASTER_GAIN     = 1.5f;
-static constexpr float BGM_GAIN_NORMAL = 0.7f;
+static constexpr float BGM_GAIN_NORMAL = 0.85f;   /* to hơn 0.7 một chút; (0.85+0.45)*1.5=1.95 vẫn dưới ngưỡng clip */
 static constexpr float SFX_GAIN        = 0.45f;
 static constexpr int   MIXER_BUFFER    = 32;
 

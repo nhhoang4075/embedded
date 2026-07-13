@@ -27,7 +27,7 @@ public:
     void service();
 
 private:
-    static constexpr float kBgmGainNormal = 0.7f;
+    static constexpr float kBgmGainNormal = 0.85f;  /* khớp với BGM_GAIN_NORMAL ở AudioPipeline */
     static constexpr float kBgmGainDucked = 0.1f;
 
     AudioPipeline      *m_pipeline = nullptr;
