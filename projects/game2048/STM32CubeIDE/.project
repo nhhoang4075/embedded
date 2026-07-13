@@ -55,6 +55,31 @@
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/joystick.c</locationURI>
 		</link>
 		<link>
+			<name>Application/User/audio_uart.c</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/audio_uart.c</locationURI>
+		</link>
+		<link>
+			<name>Application/User/platform_clock.c</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/platform_clock.c</locationURI>
+		</link>
+		<link>
+			<name>Application/User/bsp_lcd_io.c</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/bsp_lcd_io.c</locationURI>
+		</link>
+		<link>
+			<name>Application/User/bsp_board.c</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/bsp_board.c</locationURI>
+		</link>
+		<link>
+			<name>Application/User/flash_high_score_store.cpp</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/flash_high_score_store.cpp</locationURI>
+		</link>
+		<link>
 			<name>Application/User/main.c</name>
 			<type>1</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/main.c</locationURI>
@@ -568,6 +593,11 @@
 			<name>Application/User/gui/Screen2View.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/screen2_screen/Screen2View.cpp</locationURI>
+		</link>
+		<link>
+			<name>Application/User/gui/AudioBus.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/audio/AudioBus.cpp</locationURI>
 		</link>
 		<link>
 			<name>Drivers/BSP/Components/ili9341.c</name>

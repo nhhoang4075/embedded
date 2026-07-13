@@ -123,7 +123,9 @@ static void BSP_SDRAM_Initialization_Sequence(SDRAM_HandleTypeDef *hsdram, FMC_S
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-static LCD_DrvTypeDef* LcdDrv;
+/* LcdDrv có external linkage (không static) vì bsp_board.c::bsp_lcd_display_on()
+ * cần extern để tái sử dụng driver singleton. */
+LCD_DrvTypeDef* LcdDrv;
 /* I2c3Timeout / Spi5Timeout đã chuyển vào bsp_lcd_io.c làm biến static. */
 /* USER CODE END 0 */
 

@@ -14,11 +14,9 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-
-/* Forward-declare handle ADC để không kéo cả stm32f4xx_hal.h vào mọi
- * TU dùng joystick. File .c include HAL đầy đủ. */
-struct __ADC_HandleTypeDef;
-typedef struct __ADC_HandleTypeDef ADC_HandleTypeDef;
+#include "stm32f4xx_hal.h"    /* ADC_HandleTypeDef là anonymous struct
+                                 nên không forward-declare được — kéo HAL
+                                 đầy đủ vào. */
 
 #ifdef __cplusplus
 extern "C" {

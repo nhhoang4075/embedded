@@ -26,7 +26,7 @@ void      LCD_IO_WriteReg(uint8_t Reg);
 uint32_t  LCD_IO_ReadData(uint16_t RegValue, uint8_t ReadSize);
 void      LCD_Delay(uint32_t Delay);
 
-/* --- IO expander gọi bởi driver STMPE811 (Components/stmpe811/*) --- */
+/* --- IO expander gọi bởi driver STMPE811 (Components/stmpe811) --- */
 void      IOE_Init(void);
 void      IOE_ITConfig(void);
 void      IOE_Write(uint8_t Addr, uint8_t Reg, uint8_t Value);
