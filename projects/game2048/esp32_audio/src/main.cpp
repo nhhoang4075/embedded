@@ -1,17 +1,21 @@
 /* ESP32 AUDIO SLAVE cho game 2048.
  *
- * Kien truc:
- *   BGM (background music) loop lien tuc tu /audio/bgm.wav.
- *   SFX trigger qua UART command tu STM32, MIX vao bgm (khong cat bgm).
+ * Kiến trúc:
+ *   BGM (background music) loop liên tục từ /audio/bgm.mp3.
+ *   SFX trigger qua UART command từ STM32, MIX vào BGM (không cắt BGM).
+ *   Có ducking: khi SFX đang phát, gain BGM giảm để tránh tràn 16-bit.
  *
- * UART command map (1 byte tu STM32 PA2 -> ESP32 D16 = Serial2 RX):
- *   0x01  MOVE       /audio/move.wav    (mỗi swipe hop le)
- *   0x02  MERGE      /audio/merge.wav   (block gop)
- *   0x03  START      /audio/start.wav   (vao van moi)
- *   0x04  OVER       /audio/over.wav    (game over)
+ * UART command map (1 byte, STM32 USART1 PA9 -> ESP32 Serial2 RX GPIO16):
+ *   0x01  MOVE       /audio/move.wav        (mỗi swipe hợp lệ)
+ *   0x02  MERGE      /audio/merge.wav       (có gộp ô, điểm tăng)
+ *   0x03  START      /audio/start.wav       (vào ván mới)
+ *   0x04  OVER       /audio/over.wav        (game over)
+ *   0x05  NEW_HIGH   /audio/highscore.wav   (phá kỷ lục lần đầu trong ván)
+ *   0x06  BGM_PLAY   -                      (bật nhạc nền)
+ *   0x07  BGM_STOP   -                      (tắt nhạc nền)
  *
- * Files trong / audio/ tren SD = WAV format. Neu file thieu, sketch
- * van chay bgm + log "[SFX miss] /path" qua USB serial - khong crash.
+ * File trong /audio/ trên thẻ SD (FAT32). Nếu file thiếu, sketch vẫn
+ * chạy BGM và log "[SFX miss] /path" qua USB serial — không crash.
  */
 #include <Arduino.h>
 #include <SPI.h>
@@ -39,25 +43,29 @@
 #define I2S_DOUT   27
 
 //============================
-// UART command tu STM32
+// UART command từ STM32
 //============================
 #define UART_BAUD     115200
 #define UART_RX_PIN   16        // GPIO16 = D16 = Serial2 RX
-#define UART_TX_PIN   17        // GPIO17 = D17 = Serial2 TX (chua dung)
+#define UART_TX_PIN   17        // GPIO17 = D17 = Serial2 TX (chưa dùng)
 
-enum : uint8_t {
-    CMD_MOVE      = 0x01,
-    CMD_MERGE     = 0x02,
-    CMD_START     = 0x03,
-    CMD_OVER      = 0x04,
-    CMD_NEW_HIGH  = 0x05,   // break high score lan dau trong van
-    CMD_BGM_PLAY  = 0x06,   // vao Screen1 -> bat bgm
-    CMD_BGM_STOP  = 0x07,   // vao Screen2 -> dung bgm
-};
+/* Nguồn opcode: cùng một file vật lý với STM32. Đường dẫn tương đối này
+ * trỏ tới Core/Inc/audio_protocol.h của STM32 firmware — sửa opcode ở đó
+ * là hai bên đồng bộ luôn, không cần copy-paste. */
+#include "../../Core/Inc/audio_protocol.h"
+
+/* Alias ngắn cho các case statement bên dưới (giữ y hệt style cũ). */
+static constexpr uint8_t CMD_MOVE      = static_cast<uint8_t>(AudioCmd::Move);
+static constexpr uint8_t CMD_MERGE     = static_cast<uint8_t>(AudioCmd::Merge);
+static constexpr uint8_t CMD_START     = static_cast<uint8_t>(AudioCmd::Start);
+static constexpr uint8_t CMD_OVER      = static_cast<uint8_t>(AudioCmd::Over);
+static constexpr uint8_t CMD_NEW_HIGH  = static_cast<uint8_t>(AudioCmd::NewHigh);
+static constexpr uint8_t CMD_BGM_PLAY  = static_cast<uint8_t>(AudioCmd::BgmPlay);
+static constexpr uint8_t CMD_BGM_STOP  = static_cast<uint8_t>(AudioCmd::BgmStop);
 
 //============================
 // Audio paths
-// The SD da format lai FAT32 -> dung BGM chinh thuc tu /audio/bgm.mp3.
+// Thẻ SD đã format FAT32; BGM và các file SFX đặt dưới thư mục /audio/.
 static const char *BGM_PATH        = "/audio/bgm.mp3";
 static const char *MOVE_PATH       = "/audio/move.wav";
 static const char *MERGE_PATH      = "/audio/merge.wav";
@@ -129,7 +137,7 @@ void setup()
     Serial2.begin(UART_BAUD, SERIAL_8N1, UART_RX_PIN, UART_TX_PIN);
     Serial.printf("UART2 RX=GPIO%d, TX=GPIO%d\n", UART_RX_PIN, UART_TX_PIN);
 
-    // SD mount @ 10MHz
+    // Mount SD qua SPI ở 4 MHz — thẻ Catalex chậm hơn 10 MHz thường lỗi CRC.
     SPI.begin(SD_SCK, SD_MISO, SD_MOSI, SD_CS);
     if (!SD.begin(SD_CS, SPI, 4000000)) {
         Serial.println("[X] SD.begin FAIL");
