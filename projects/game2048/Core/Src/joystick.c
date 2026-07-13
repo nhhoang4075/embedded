@@ -11,6 +11,7 @@
  *   - s_buf trong BSS (SRAM1, DMA-accessible).
  */
 #include "joystick.h"
+#include "board_config.h"
 #include "stm32f4xx_hal.h"
 
 static ADC_HandleTypeDef *s_hadc;
@@ -25,21 +26,17 @@ static uint32_t s_sw_last_ms  = 0;
 
 static void sw_gpio_init(void)
 {
-    if      (JOY_SW_PORT == GPIOA) __HAL_RCC_GPIOA_CLK_ENABLE();
-    else if (JOY_SW_PORT == GPIOB) __HAL_RCC_GPIOB_CLK_ENABLE();
-    else if (JOY_SW_PORT == GPIOC) __HAL_RCC_GPIOC_CLK_ENABLE();
-    else if (JOY_SW_PORT == GPIOD) __HAL_RCC_GPIOD_CLK_ENABLE();
-    else if (JOY_SW_PORT == GPIOE) __HAL_RCC_GPIOE_CLK_ENABLE();
-    else if (JOY_SW_PORT == GPIOF) __HAL_RCC_GPIOF_CLK_ENABLE();
-    else if (JOY_SW_PORT == GPIOG) __HAL_RCC_GPIOG_CLK_ENABLE();
-    else if (JOY_SW_PORT == GPIOH) __HAL_RCC_GPIOH_CLK_ENABLE();
+    /* RCC clock cho GPIOG (chứa BOARD_JOY_SW_PIN mặc định). Nếu port
+     * đổi trong board_config.h, cập nhật dòng dưới đây. Pha refactor
+     * sau sẽ dời phần bật clock sang MX_GPIO_Init. */
+    __HAL_RCC_GPIOG_CLK_ENABLE();
 
     GPIO_InitTypeDef gpio = {0};
-    gpio.Pin  = JOY_SW_PIN;
+    gpio.Pin  = BOARD_JOY_SW_PIN;
     gpio.Mode = GPIO_MODE_INPUT;
     gpio.Pull = GPIO_PULLUP;
     gpio.Speed= GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(JOY_SW_PORT, &gpio);
+    HAL_GPIO_Init(BOARD_JOY_SW_PORT, &gpio);
 }
 
 /* Clear toan bo flag cua DMA2 Stream 0 (TCIF0 / HTIF0 / TEIF0 / DMEIF0 / FEIF0)
@@ -83,7 +80,7 @@ void joystick_init(ADC_HandleTypeDef *hadc)
 
 bool joystick_sw_pressed(void)
 {
-    bool pressed_now = (HAL_GPIO_ReadPin(JOY_SW_PORT, JOY_SW_PIN) == GPIO_PIN_RESET);
+    bool pressed_now = (HAL_GPIO_ReadPin(BOARD_JOY_SW_PORT, BOARD_JOY_SW_PIN) == GPIO_PIN_RESET);
     uint32_t now = HAL_GetTick();
 
     if (!pressed_now) {
@@ -152,3 +149,8 @@ joy_dir_t joystick_poll(void)
     }
     return JOY_NONE;
 }
+
+/* Nguồn entropy khi seed RNG lần đầu (được Model gọi ở lần user tương
+ * tác đầu tiên). Đọc thô, không đụng edge-trigger state. */
+uint16_t joystick_raw_x(void) { return s_buf[0]; }
+uint16_t joystick_raw_y(void) { return s_buf[1]; }
