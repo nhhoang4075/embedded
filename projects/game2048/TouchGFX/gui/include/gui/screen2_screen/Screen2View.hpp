@@ -6,7 +6,7 @@
 #include <touchgfx/Callback.hpp>
 #include <touchgfx/Unicode.hpp>
 #include <touchgfx/widgets/AbstractButton.hpp>
-#include <touchgfx/widgets/canvas/ScalableImage.hpp>
+/* touchgfx::ScalableImage sẵn có qua Screen2ViewBase.hpp — không cần include lại. */
 
 class Screen2View : public Screen2ViewBase
 {
