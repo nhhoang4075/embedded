@@ -22,6 +22,10 @@
 #include <STM32TouchController.hpp>
 #include "Components/stmpe811/stmpe811.h"
 
+extern "C" {
+#include "bsp_board.h"
+}
+
 #define TS_I2C_ADDRESS                      0x82
 
 static TS_DrvTypeDef*     TsDrv;
@@ -45,15 +49,27 @@ typedef enum
 uint8_t BSP_TS_Init(uint16_t XSize, uint16_t YSize);
 void    BSP_TS_GetState(TS_StateTypeDef* TsState);
 
-extern "C" uint8_t isRevD; /* Applicable only for STM32F429I DISCOVERY REVD and above */
+/* Đọc board rev qua bsp_board_is_revd() (thay cho extern isRevD cũ). */
+
+/* USE_TOUCH_SCREEN: nếu KHÔNG bật (mặc định), touch subsystem bị bỏ qua
+ * hoàn toàn. Game này chỉ dùng joystick nên touch không cần thiết. Bật
+ * cờ này nếu muốn dùng STMPE811 kết hợp joystick (ví dụ Screen1 có nút
+ * Start chạm được).
+ *
+ * Kể cả khi bật, sampleTouch có null-guard: nếu I²C timeout ở BSP_TS_Init
+ * và TsDrv giữ NULL, sampleTouch trả false thay vì null-deref crash. */
 
 void STM32TouchController::init()
 {
+#ifdef USE_TOUCH_SCREEN
     BSP_TS_Init(240, 320);
+#endif
 }
 
 bool STM32TouchController::sampleTouch(int32_t& x, int32_t& y)
 {
+#ifdef USE_TOUCH_SCREEN
+    if (TsDrv == nullptr) return false;   /* init đã fail, đừng crash */
     TS_StateTypeDef state;
     BSP_TS_GetState(&state);
     if (state.TouchDetected)
@@ -62,6 +78,9 @@ bool STM32TouchController::sampleTouch(int32_t& x, int32_t& y)
         y = state.Y;
         return true;
     }
+#else
+    (void)x; (void)y;
+#endif
     return false;
 }
 
@@ -108,13 +127,21 @@ void BSP_TS_GetState(TS_StateTypeDef* TsState)
     static uint32_t _x = 0, _y = 0;
     uint16_t xDiff, yDiff, x, y, xr, yr;
 
+    /* Null-guard: nếu BSP_TS_Init không nhận diện được STMPE811 (I²C
+     * timeout hoặc board không có touch), TsDrv vẫn là NULL — trả về
+     * "không có chạm" thay vì crash. */
+    if (TsDrv == nullptr) {
+        TsState->TouchDetected = 0;
+        return;
+    }
+
     TsState->TouchDetected = TsDrv->DetectTouch(TS_I2C_ADDRESS);
 
     if (TsState->TouchDetected)
     {
         TsDrv->GetXY(TS_I2C_ADDRESS, &x, &y);
 
-        if (isRevD)
+        if (bsp_board_is_revd())
         {
             //Ensures the coordinates are within the screen
             if (y > 3700)

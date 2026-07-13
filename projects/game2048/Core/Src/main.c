@@ -29,6 +29,7 @@
 #include "audio_uart.h"
 #include "platform_clock.h"
 #include "bsp_lcd_io.h"       /* LCD_IO_*, IOE_* shim ra khỏi main.c */
+#include "bsp_board.h"        /* isRevD detect + LCD DisplayOn workaround */
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -97,7 +98,7 @@ const osThreadAttr_t GUI_Task_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* USER CODE BEGIN PV */
-uint8_t isRevD = 0; /* Applicable only for STM32F429I DISCOVERY REVD and above */
+/* isRevD đã chuyển vào bsp_board.c (query qua bsp_board_is_revd()). */
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -170,8 +171,9 @@ int main(void)
   /* USER CODE BEGIN 2 */
   /* Bật DWT->CYCCNT cho platform_clock (entropy + timer high-res). */
   platform_clock_init();
-  /* Cấu hình USART1 PA9 gửi lệnh âm thanh sang ESP32.
-   * Nếu init lỗi, coi như không có âm — audio non-critical. */
+  /* Detect board rev (revC vs revD) qua WHO_AM_I gyro trên SPI5. */
+  bsp_board_detect_rev();
+  /* Cấu hình USART1 PA9 gửi lệnh âm thanh sang ESP32. */
   audio_uart_init();
   joystick_init(&hadc1);
   /* USER CODE END 2 */
@@ -506,15 +508,11 @@ static void MX_LTDC_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN LTDC_Init 2 */
-    /*Select the device */
   LcdDrv = &ili9341_drv;
-  /* LCD Init */
   LcdDrv->Init();
-
-  /* CubeMX template để DisplayOff() sau Init, nhưng KHÔNG có chỗ nào
-   * gọi DisplayOn() lại -> màn hình trắng vĩnh viễn. Bật display luôn,
-   * LTDC + framebuffer sẽ sẵn sàng trước khi TouchGFX vẽ frame đầu. */
-  LcdDrv->DisplayOn();
+  /* Bắt buộc: workaround "template DisplayOff nhưng không DisplayOn lại"
+   * — xem cảnh báo trong bsp_board.h. */
+  bsp_lcd_display_on();
   /* USER CODE END LTDC_Init 2 */
 
 }
@@ -552,19 +550,8 @@ static void MX_SPI5_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN SPI5_Init 2 */
-  // Check if the board has the old or new revision of the gyroscope
-  // This tells if the board is revision D or newer
-  // It is used to handle the touch input correctly
-  const uint8_t READ_ID_CMD = 0x8F; // 0b10001111 = set read bit and register address of WHO_AM_I
-  uint8_t pdata = 0;
-  HAL_GPIO_WritePin(SPI5_NCS_GPIO_Port, SPI5_NCS_Pin, GPIO_PIN_RESET);
-  HAL_SPI_Transmit(&hspi5, &READ_ID_CMD, 1, 1000);
-  HAL_SPI_Receive(&hspi5, &pdata, 1, 1000);
-  HAL_GPIO_WritePin(SPI5_NCS_GPIO_Port, SPI5_NCS_Pin, GPIO_PIN_SET);
-  if (pdata == 0xD3) // 0b11010011
-  {
-    isRevD = 1;
-  }
+  /* Board rev detect chuyển vào USER CODE BEGIN 2 (sau khi tất cả
+   * peripheral init xong) — xem bsp_board_detect_rev(). */
   /* USER CODE END SPI5_Init 2 */
 
 }
