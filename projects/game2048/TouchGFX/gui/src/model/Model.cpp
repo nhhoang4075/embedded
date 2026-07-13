@@ -6,10 +6,11 @@ extern "C"
 {
 #include "game2048.h"
 #include "joystick.h"
-#include "stm32f4xx_hal.h"
-#include "main.h"
+#include "platform_clock.h"
 }
 
+/* Adapter cho g2048_init: game core cần một callback rng theo signature
+ * uint32_t(void*), ta chỉ cần đọc rand() (đã seed ở nơi khác). */
 static uint32_t simulator_rng(void*)
 {
     return rand();
@@ -20,17 +21,38 @@ Model::Model() :
     highScore(0),
     gameActive(false),
     recordBroken(false),
-    overEmitted(false)
+    overEmitted(false),
+    rngSeeded(false)
 {
-    srand(HAL_GetTick());
+    /* Seed tạm thời bằng tick — sẽ được thay bằng reseed thực khi user
+     * tương tác lần đầu (reseedRngIfNeeded). */
+    srand(platform_now_ms());
     g2048_init(&game, simulator_rng, nullptr);
+
+    /* Nạp điểm cao đã lưu (flash sector 11). Nếu chưa từng lưu hoặc
+     * flash trắng thì store.load() trả 0. */
+    highScore = scoreStore.load();
 }
 
-void Model::playSfx(uint8_t cmd)
+void Model::playSfx(AudioCmd cmd)
 {
-    /* Fire-and-forget. Timeout 5ms de GUI task khong treo neu ESP32 chet.
-     * Dung USART1 PA9 vi PA2 (USART2) bi conflict tren F429-DISC1 board. */
-    HAL_UART_Transmit(&huart1, &cmd, 1, 5);
+    /* Fire-and-forget qua AudioBus. Nếu ESP32 chết, tối đa mất 5 ms rồi
+     * trả về (timeout trong audio_uart_send). GUI không bị treo lâu. */
+    audioBus.send(cmd);
+}
+
+void Model::reseedRngIfNeeded()
+{
+    if (rngSeeded) return;
+    /* Trộn ba nguồn entropy: tick ms + chu kỳ CPU (DWT) + noise ADC.
+     * Timing của lần bấm đầu tiên không thể đoán được → seed đủ tốt
+     * cho game (không cần cryptographic RNG). */
+    uint32_t entropy = platform_now_ms();
+    entropy ^= platform_cycles();
+    entropy ^= (static_cast<uint32_t>(joystick_raw_x()) << 16) |
+               static_cast<uint32_t>(joystick_raw_y());
+    srand(entropy);
+    rngSeeded = true;
 }
 
 void Model::resetGame()
@@ -38,7 +60,7 @@ void Model::resetGame()
     g2048_init(&game, simulator_rng, nullptr);
     recordBroken = false;
     overEmitted  = false;
-    playSfx(AUDIO_START);
+    playSfx(AudioCmd::Start);
 }
 
 void Model::tick()
@@ -46,6 +68,7 @@ void Model::tick()
     /* SW joystick luôn được poll, kể cả trên Screen1, để điều hướng. */
     if (joystick_sw_pressed() && modelListener)
     {
+        reseedRngIfNeeded();     /* lần đầu user chạm → nạp entropy thật */
         modelListener->swPressed();
     }
 
@@ -55,7 +78,14 @@ void Model::tick()
     if (game.state == G2048_LOST && !overEmitted)
     {
         overEmitted = true;
-        playSfx(AUDIO_OVER);
+        playSfx(AudioCmd::Over);
+
+        /* Điểm cao chỉ ghi flash tại đây — endpoint sạch, không ghi
+         * mỗi frame. Nếu score ván này lớn hơn giá trị cache thì lưu. */
+        if (game.score > scoreStore.load())
+        {
+            scoreStore.save(game.score);
+        }
     }
 
     /* Joystick analog chỉ áp dụng khi đang ở Screen2 (chơi game). */
@@ -79,13 +109,13 @@ void Model::tick()
     bool     hadMerge = (newScore > prevScore);
 
     /* MOVE = swipe không gộp. MERGE = swipe có gộp (điểm tăng). */
-    playSfx(hadMerge ? AUDIO_MERGE : AUDIO_MOVE);
+    playSfx(hadMerge ? AudioCmd::Merge : AudioCmd::Move);
 
     /* Break high score: chỉ lần đầu vượt qua highScore trong ván này. */
     if (!recordBroken && newScore > highScore)
     {
         recordBroken = true;
-        playSfx(AUDIO_NEW_HIGH);
+        playSfx(AudioCmd::NewHigh);
     }
 
     if (newScore > highScore)

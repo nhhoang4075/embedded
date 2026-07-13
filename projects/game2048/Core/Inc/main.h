@@ -54,7 +54,7 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-extern UART_HandleTypeDef huart1;   /* PA9 -> ESP32 D16 audio command */
+/* huart1 đã chuyển vào audio_uart.c — TU khác không còn cần extern. */
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
