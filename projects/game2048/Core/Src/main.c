@@ -28,6 +28,7 @@
 #include "joystick.h"
 #include "audio_uart.h"
 #include "platform_clock.h"
+#include "bsp_lcd_io.h"       /* LCD_IO_*, IOE_* shim ra khỏi main.c */
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -55,8 +56,6 @@
 #define SDRAM_MODEREG_WRITEBURST_MODE_PROGRAMMED ((uint16_t)0x0000)
 #define SDRAM_MODEREG_WRITEBURST_MODE_SINGLE     ((uint16_t)0x0200)
 
-#define I2C3_TIMEOUT_MAX                    0x3000 /*<! The value of the maximal timeout for I2C waiting loops */
-#define SPI5_TIMEOUT_MAX                    0x1000
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -118,41 +117,13 @@ extern void TouchGFX_Task(void *argument);
 
 /* USER CODE BEGIN PFP */
 static void BSP_SDRAM_Initialization_Sequence(SDRAM_HandleTypeDef *hsdram, FMC_SDRAM_CommandTypeDef *Command);
-
-
-
-static uint8_t            I2C3_ReadData(uint8_t Addr, uint8_t Reg);
-static void               I2C3_WriteData(uint8_t Addr, uint8_t Reg, uint8_t Value);
-static uint8_t            I2C3_ReadBuffer(uint8_t Addr, uint8_t Reg, uint8_t *pBuffer, uint16_t Length);
-
-/* SPIx bus function */
-static void               SPI5_Write(uint16_t Value);
-static uint32_t           SPI5_Read(uint8_t ReadSize);
-static void               SPI5_Error(void);
-
-/* Link function for LCD peripheral */
-void                      LCD_IO_Init(void);
-void                      LCD_IO_WriteData(uint16_t RegValue);
-void                      LCD_IO_WriteReg(uint8_t Reg);
-uint32_t                  LCD_IO_ReadData(uint16_t RegValue, uint8_t ReadSize);
-void                      LCD_Delay(uint32_t delay);
-
-/* IOExpander IO functions */
-void                      IOE_Init(void);
-void                      IOE_ITConfig(void);
-void                      IOE_Delay(uint32_t Delay);
-void                      IOE_Write(uint8_t Addr, uint8_t Reg, uint8_t Value);
-uint8_t                   IOE_Read(uint8_t Addr, uint8_t Reg);
-uint16_t                  IOE_ReadMultiple(uint8_t Addr, uint8_t Reg, uint8_t *pBuffer, uint16_t Length);
-
+/* LCD_IO_* và IOE_* đã chuyển sang bsp_lcd_io.h/.c. */
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 static LCD_DrvTypeDef* LcdDrv;
-
-uint32_t I2c3Timeout = I2C3_TIMEOUT_MAX; /*<! Value of Timeout when I2C communication fails */
-uint32_t Spi5Timeout = SPI5_TIMEOUT_MAX; /*<! Value of Timeout when SPI communication fails */
+/* I2c3Timeout / Spi5Timeout đã chuyển vào bsp_lcd_io.c làm biến static. */
 /* USER CODE END 0 */
 
 /**
@@ -828,267 +799,8 @@ static void BSP_SDRAM_Initialization_Sequence(SDRAM_HandleTypeDef *hsdram, FMC_S
   HAL_SDRAM_ProgramRefreshRate(hsdram, REFRESH_COUNT);
 }
 
-/**
-  * @brief  IOE Low Level Initialization.
-  */
-void IOE_Init(void)
-{
-  //Dummy function called when initializing to stmpe811 to setup the i2c.
-  //This is done with cubmx and is therfore not done here.
-}
-
-/**
-  * @brief  IOE Low Level Interrupt configuration.
-  */
-void IOE_ITConfig(void)
-{
-  //Dummy function called when initializing to stmpe811 to setup interupt for the i2c.
-  //The interupt is not used in our case, therefore nothing is done here.
-}
-
-/**
-  * @brief  IOE Writes single data operation.
-  * @param  Addr: I2C Address
-  * @param  Reg: Reg Address
-  * @param  Value: Data to be written
-  */
-void IOE_Write(uint8_t Addr, uint8_t Reg, uint8_t Value)
-{
-  I2C3_WriteData(Addr, Reg, Value);
-}
-
-/**
-  * @brief  IOE Reads single data.
-  * @param  Addr: I2C Address
-  * @param  Reg: Reg Address
-  * @retval The read data
-  */
-uint8_t IOE_Read(uint8_t Addr, uint8_t Reg)
-{
-  return I2C3_ReadData(Addr, Reg);
-}
-
-/**
-  * @brief  IOE Reads multiple data.
-  * @param  Addr: I2C Address
-  * @param  Reg: Reg Address
-  * @param  pBuffer: pointer to data buffer
-  * @param  Length: length of the data
-  * @retval 0 if no problems to read multiple data
-  */
-uint16_t IOE_ReadMultiple(uint8_t Addr, uint8_t Reg, uint8_t *pBuffer, uint16_t Length)
-{
- return I2C3_ReadBuffer(Addr, Reg, pBuffer, Length);
-}
-
-/**
-  * @brief  IOE Delay.
-  * @param  Delay in ms
-  */
-void IOE_Delay(uint32_t Delay)
-{
-  HAL_Delay(Delay);
-}
-
-/**
-  * @brief  Writes a value in a register of the device through BUS.
-  * @param  Addr: Device address on BUS Bus.
-  * @param  Reg: The target register address to write
-  * @param  Value: The target register value to be written
-  */
-static void I2C3_WriteData(uint8_t Addr, uint8_t Reg, uint8_t Value)
-{
-  HAL_StatusTypeDef status = HAL_OK;
-
-  status = HAL_I2C_Mem_Write(&hi2c3, Addr, (uint16_t)Reg, I2C_MEMADD_SIZE_8BIT, &Value, 1, I2c3Timeout);
-
-  /* Check the communication status */
-  if(status != HAL_OK)
-  {
-    /* Re-Initialize the BUS */
-    //I2Cx_Error();
-  }
-}
-
-/**
-  * @brief  Reads a register of the device through BUS.
-  * @param  Addr: Device address on BUS Bus.
-  * @param  Reg: The target register address to write
-  * @retval Data read at register address
-  */
-static uint8_t I2C3_ReadData(uint8_t Addr, uint8_t Reg)
-{
-  HAL_StatusTypeDef status = HAL_OK;
-  uint8_t value = 0;
-
-  status = HAL_I2C_Mem_Read(&hi2c3, Addr, Reg, I2C_MEMADD_SIZE_8BIT, &value, 1, I2c3Timeout);
-
-  /* Check the communication status */
-  if(status != HAL_OK)
-  {
-    /* Re-Initialize the BUS */
-    //I2Cx_Error();
-
-  }
-  return value;
-}
-
-/**
-  * @brief  Reads multiple data on the BUS.
-  * @param  Addr: I2C Address
-  * @param  Reg: Reg Address
-  * @param  pBuffer: pointer to read data buffer
-  * @param  Length: length of the data
-  * @retval 0 if no problems to read multiple data
-  */
-static uint8_t I2C3_ReadBuffer(uint8_t Addr, uint8_t Reg, uint8_t *pBuffer, uint16_t Length)
-{
-  HAL_StatusTypeDef status = HAL_OK;
-
-  status = HAL_I2C_Mem_Read(&hi2c3, Addr, (uint16_t)Reg, I2C_MEMADD_SIZE_8BIT, pBuffer, Length, I2c3Timeout);
-
-  /* Check the communication status */
-  if(status == HAL_OK)
-  {
-    return 0;
-  }
-  else
-  {
-    /* Re-Initialize the BUS */
-    //I2Cx_Error();
-
-    return 1;
-  }
-}
-
-/**
-  * @brief  Reads 4 bytes from device.
-  * @param  ReadSize: Number of bytes to read (max 4 bytes)
-  * @retval Value read on the SPI
-  */
-static uint32_t SPI5_Read(uint8_t ReadSize)
-{
-  HAL_StatusTypeDef status = HAL_OK;
-  uint32_t readvalue;
-
-  status = HAL_SPI_Receive(&hspi5, (uint8_t*) &readvalue, ReadSize, Spi5Timeout);
-
-  /* Check the communication status */
-  if(status != HAL_OK)
-  {
-    /* Re-Initialize the BUS */
-    SPI5_Error();
-  }
-
-  return readvalue;
-}
-
-/**
-  * @brief  Writes a byte to device.
-  * @param  Value: value to be written
-  */
-static void SPI5_Write(uint16_t Value)
-{
-  HAL_StatusTypeDef status = HAL_OK;
-
-  status = HAL_SPI_Transmit(&hspi5, (uint8_t*) &Value, 1, Spi5Timeout);
-
-  /* Check the communication status */
-  if(status != HAL_OK)
-  {
-    /* Re-Initialize the BUS */
-    SPI5_Error();
-  }
-}
-
-/**
-  * @brief  SPI5 error treatment function.
-  */
-static void SPI5_Error(void)
-{
-  /* De-initialize the SPI communication BUS */
-  //HAL_SPI_DeInit(&SpiHandle);
-
-  /* Re- Initialize the SPI communication BUS */
-  //SPIx_Init();
-}
-
-void LCD_IO_Init(void)
-{
-  /* Set or Reset the control line */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_SET);
-}
-
-/**
-  * @brief  Writes register value.
-  */
-void LCD_IO_WriteData(uint16_t RegValue)
-{
-  /* Set WRX to send data */
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
-
-  /* Reset LCD control line(/CS) and Send data */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_RESET);
-  SPI5_Write(RegValue);
-
-  /* Deselect: Chip Select high */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_SET);
-}
-
-/**
-  * @brief  Writes register address.
-  */
-void LCD_IO_WriteReg(uint8_t Reg)
-{
-  /* Reset WRX to send command */
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
-
-  /* Reset LCD control line(/CS) and Send command */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_RESET);
-  SPI5_Write(Reg);
-
-  /* Deselect: Chip Select high */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_SET);
-}
-
-/**
-  * @brief  Reads register value.
-  * @param  RegValue Address of the register to read
-  * @param  ReadSize Number of bytes to read
-  * @retval Content of the register value
-  */
-uint32_t LCD_IO_ReadData(uint16_t RegValue, uint8_t ReadSize)
-{
-  uint32_t readvalue = 0;
-
-  /* Select: Chip Select low */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_RESET);
-
-  /* Reset WRX to send command */
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
-
-  SPI5_Write(RegValue);
-
-  readvalue = SPI5_Read(ReadSize);
-
-  /* Set WRX to send data */
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
-
-  /* Deselect: Chip Select high */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_SET);
-
-  return readvalue;
-}
-
-/**
-  * @brief  Wait for loop in ms.
-  * @param  Delay in ms.
-  */
-void LCD_Delay(uint32_t Delay)
-{
-  HAL_Delay(Delay);
-}
+/* Toàn bộ LCD_IO_*, IOE_*, I2C3_*, SPI5_* shim đã chuyển sang
+ * Core/Src/bsp_lcd_io.c. Xem bsp_lcd_io.h cho danh sách API. */
 
 /* USER CODE END 4 */
 
