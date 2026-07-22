@@ -1,6 +1,6 @@
 # Embedded Systems - STM32F4
 
-Học lập trình hệ thống nhúng với vi điều khiển STM32F4.
+Lập trình hệ thống nhúng với vi điều khiển STM32F4.
 
 ## Yêu cầu phần mềm
 
@@ -16,11 +16,3 @@ Học lập trình hệ thống nhúng với vi điều khiển STM32F4.
 2. Tải và cài **STM32CubeMX** từ [st.com](https://www.st.com/en/development-tools/stm32cubemx.html)
 3. Mở CubeMX → Help → Manage embedded software packages → cài **STM32CubeF4**
 
-## Cấu trúc thư mục
-
-```
-embedded/
-├── labs/          # Bài thực hành
-├── projects/      # Đồ án / project lớn
-└── notes/         # Ghi chú lý thuyết
-```

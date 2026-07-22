@@ -44,7 +44,15 @@ static uint32_t s_sw_last_ms  = 0;
  * Pull-up. Không cần khởi tạo lại ở đây. */
 
 /* Xoá toàn bộ cờ DMA2 Stream 0 (TCIF0/HTIF0/TEIF0/DMEIF0/FEIF0) trước
- * khi restart — cờ tồn đọng sẽ khiến bit EN không lên lại được. */
+ * khi restart — cờ tồn đọng sẽ khiến bit EN không lên lại được.
+ * LIFCR = Low Interrupt Flag Clear Register 
+ * 
+ * DMA2->LIFCR = DMA_LIFCR_CTCIF0    Clear Transfer Complete
+ *             | DMA_LIFCR_CHTIF0    Clear Half Transfer
+ *             | DMA_LIFCR_CTEIF0    Clear Transfer Error
+ *             | DMA_LIFCR_CDMEIF0   Clear Direct Mode Error
+ *             | DMA_LIFCR_CFEIF0;   Clear FIFO Error
+ */
 static void dma2_stream0_clear_flags(void)
 {
     DMA2->LIFCR = DMA_LIFCR_CTCIF0 | DMA_LIFCR_CHTIF0

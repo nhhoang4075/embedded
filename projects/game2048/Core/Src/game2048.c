@@ -19,7 +19,6 @@ static int count_empty(const g2048_game_t *g)
 
 /*
  * Sinh một ô mới (90% là 2, 10% là 4) tại một vị trí trống ngẫu nhiên.
- * Giả định lưới còn ít nhất 1 ô trống.
  */
 static void spawn_tile(g2048_game_t *g)
 {
